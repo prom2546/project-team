@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>หน้าต้อนรับ</title>
+  <style>
+    body {
+      margin: 0;
+      background-image: url('images/wallpaper.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+    }
+    .overlay {
+      background: rgba(0,0,0,0.6);
+      padding: 3rem 4rem;
+      border-radius: 20px;
+      color: white;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #00ffc8;
+    }
+    button {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      padding: 1rem 2.5rem;
+      background-color: #00cc88;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>ยินดีต้อนรับ</h1>
+    <p>แตะหน้าจอเพื่อเริ่มต้นใช้งาน</p>
+    <button onclick="location.href='index.html'">เริ่มเลือกสินค้า</button>
+  </div>
+</body>
+</html>
