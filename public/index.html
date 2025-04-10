@@ -1,21 +1,17 @@
+<!-- BEGINNING -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ร้านค้าออนไลน์</title>
-
-  <!-- Bootstrap CSS -->
+ 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
-  <!-- Vue.js -->
   <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.min.js"></script>
-
+ 
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
+    body { background-color: #f8f9fa; }
     .product-card img {
       width: 100%;
       height: 180px;
@@ -24,23 +20,15 @@
   </style>
 </head>
 <body>
-
+ 
 <div id="app" class="container mt-4">
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-3">
     <div class="container">
       <a class="navbar-brand" href="#"><i class="bi bi-shop"></i> ร้านค้าออนไลน์</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="admin.html"><i class="bi bi-tools"></i> จัดการสินค้า</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="foot-analysis.html"><i class="bi bi-eye"></i> สแกนเท้า</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-tools"></i> จัดการสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="foot-analysis.html"><i class="bi bi-eye"></i> สแกนเท้า</a></li>
           <li class="nav-item">
             <a class="nav-link cart-icon" @click="showCart = true">
               <i class="bi bi-cart"></i> ตะกร้า ({{ cart.length }})
@@ -50,32 +38,20 @@
       </div>
     </div>
   </nav>
-
-  <!-- ปุ่มแยกด้านบน (ใช้แบบนี้แทนในจอ Touch ก็ได้) -->
-  <div class="d-flex justify-content-end mb-3">
-    <a href="foot-analysis.html" class="btn btn-outline-success">
-      <i class="bi bi-eye"></i> สแกนเท้า
-    </a>
-  </div>
-
-  <!-- Product List -->
+ 
   <div class="row">
     <div v-for="(product, id) in products" :key="id" class="col-md-4 mb-4">
-      <div class="card product-card shadow-sm">
-        <img :src="product.image || 'images/default.jpg'" class="card-img-top" alt="Product" />
+      <div class="card product-card shadow-sm" @click="addToCart(id, product)" style="cursor: pointer;">
+        <img :src="product.image || 'images/default.jpg'" class="card-img-top" />
         <div class="card-body text-center">
           <h5 class="card-title">{{ product.name }}</h5>
           <p class="text-muted">ราคา: {{ product.price }} THB</p>
           <p>คงเหลือ: <span class="fw-bold">{{ product.stock }}</span></p>
-          <button class="btn btn-primary w-100 btn-lg" @click="addToCart(id, product)">
-            <i class="bi bi-cart-plus"></i> เพิ่มลงตะกร้า
-          </button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Cart Modal -->
+ 
   <div v-if="showCart" class="modal fade show d-block" style="background: rgba(0,0,0,0.5)">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -85,13 +61,13 @@
         </div>
         <div class="modal-body">
           <ul class="list-group">
-            <li
-              v-for="(item, index) in cart"
-              :key="index"
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
+            <li v-for="(item, index) in cart" :key="index"
+                class="list-group-item d-flex justify-content-between align-items-center">
               {{ item.name }} x {{ item.quantity }}
-              <span class="badge bg-primary">{{ item.price * item.quantity }} THB</span>
+              <span>
+                <span class="badge bg-primary">{{ item.price * item.quantity }} THB</span>
+                <button class="btn btn-sm btn-danger ms-2" @click.stop="removeFromCart(index)">ลบ</button>
+              </span>
             </li>
           </ul>
           <p class="mt-3 text-end fw-bold">รวม: {{ totalPrice }} THB</p>
@@ -106,93 +82,115 @@
     </div>
   </div>
 </div>
-
-<!-- Bootstrap JS -->
+ 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+ 
 <script>
-  const { createApp } = Vue;
-
-  createApp({
-    data() {
-      return {
-        apiBaseUrl: window.location.origin,
-        products: {},
-        cart: [],
-        showCart: false
-      };
-    },
-    computed: {
-      totalPrice() {
-        return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      }
-    },
-    methods: {
-      async loadProducts() {
-        try {
-          const response = await fetch(`${this.apiBaseUrl}/products`);
-          if (!response.ok) throw new Error("โหลดสินค้าล้มเหลว!");
-          this.products = await response.json();
-        } catch (err) {
-          console.error(err);
-          alert("❌ ไม่สามารถโหลดสินค้าได้!");
-        }
-      },
-      async addToCart(id, product) {
-        if (product.stock <= 0) {
-          alert("❌ สินค้าหมด!");
-          return;
-        }
-
-        product.stock--;
-
-        try {
-          await fetch(`${this.apiBaseUrl}/products/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ stock: product.stock })
-          });
-        } catch (err) {
-          console.error(err);
-          alert("❌ อัปเดตสต็อกไม่สำเร็จ");
-          return;
-        }
-
-        let existingItem = this.cart.find(item => item.id === id);
-        if (existingItem) {
-          existingItem.quantity++;
-        } else {
-          this.cart.push({ id, name: product.name, price: product.price, quantity: 1 });
-        }
-      },
-      async checkout() {
-        if (this.cart.length === 0) {
-          alert("❌ ไม่มีสินค้าในตะกร้า!");
-          return;
-        }
-
-        try {
-          let orderData = { cart: this.cart, timestamp: new Date().toISOString() };
-          await fetch(`${this.apiBaseUrl}/orders`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderData)
-          });
-
-          alert("✅ คำสั่งซื้อสำเร็จ!");
-          this.cart = [];
-        } catch (err) {
-          console.error(err);
-          alert("❌ ไม่สามารถบันทึกคำสั่งซื้อได้");
-        }
-      }
-    },
-    mounted() {
-      console.log("📡 Connecting to API:", this.apiBaseUrl);
-      this.loadProducts();
+const { createApp } = Vue;
+ 
+createApp({
+  data() {
+    return {
+      apiBaseUrl: window.location.origin,
+      products: {},
+      cart: [],
+      showCart: false
+    };
+  },
+  computed: {
+    totalPrice() {
+      return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     }
-  }).mount("#app");
+  },
+  methods: {
+    async loadProducts() {
+      try {
+        const res = await fetch(`${this.apiBaseUrl}/products`);
+        if (!res.ok) throw new Error("โหลดสินค้าล้มเหลว!");
+        this.products = await res.json();
+      } catch (err) {
+        console.error(err);
+        alert("❌ ไม่สามารถโหลดสินค้าได้!");
+      }
+    },
+    async addToCart(id, product) {
+      if (product.stock <= 0) {
+        alert("❌ สินค้าหมด!");
+        return;
+      }
+ 
+      product.stock--;
+ 
+      try {
+        await fetch(`${this.apiBaseUrl}/products/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stock: product.stock })
+        });
+      } catch (err) {
+        console.error(err);
+        alert("❌ อัปเดตสต็อกไม่สำเร็จ");
+        return;
+      }
+ 
+      let existingItem = this.cart.find(item => item.id === id);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        this.cart.push({ id, name: product.name, price: product.price, quantity: 1 });
+      }
+    },
+    async removeFromCart(index) {
+  const item = this.cart[index];
+  const product = this.products[item.id];
+ 
+  // เพิ่ม stock กลับ 1 ชิ้น
+  product.stock++;
+ 
+  try {
+    await fetch(`${this.apiBaseUrl}/products/${item.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stock: product.stock })
+    });
+  } catch (err) {
+    console.error(err);
+  }
+ 
+  // ถ้ามากกว่า 1 ชิ้น ให้ลดแค่ 1
+  if (item.quantity > 1) {
+    item.quantity--;
+  } else {
+    this.cart.splice(index, 1); // ถ้าเหลือชิ้นเดียวก็ลบออก
+  }
+},
+    async checkout() {
+      if (this.cart.length === 0) {
+        alert("❌ ไม่มีสินค้าในตะกร้า!");
+        return;
+      }
+ 
+      try {
+        let orderData = { cart: this.cart, timestamp: new Date().toISOString() };
+        await fetch(`${this.apiBaseUrl}/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData)
+        });
+ 
+        alert("✅ คำสั่งซื้อสำเร็จ!");
+        this.cart = [];
+      } catch (err) {
+        console.error(err);
+        alert("❌ ไม่สามารถบันทึกคำสั่งซื้อได้");
+      }
+    }
+  },
+  mounted() {
+    this.loadProducts();
+  }
+}).mount("#app");
 </script>
-
+ 
 </body>
 </html>
