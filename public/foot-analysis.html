@@ -9,21 +9,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
+<body>
+  <div class="container">
+    <h1>ผลการวิเคราะห์เท้าของคุณ</h1>
 
-  <h1>ผลการวิเคราะห์เท้าของคุณ</h1>
+    <div id="resultMessage" class="result">
+      <img id="footImage" src="" alt="ประเภทเท้า">
+      <p id="footLabel">กำลังโหลด...</p>
+      <p id="footConfidence">กำลังโหลด...</p>
+    </div>
 
-  <div id="resultMessage" class="result">
-    <img id="footImage" src="" alt="ประเภทเท้า">
-    <p id="footLabel">กำลังโหลด...</p>
-    <p id="footConfidence">กำลังโหลด...</p>
+    <div id="footInfo" class="result"></div>
+
+    <div class="product-list" id="product-list"></div>
+
+    <button class="back-btn" onclick="window.location.href = 'scan.html';">กลับไปสแกนเท้าใหม่</button>
+    <button class="choose-btn" onclick="window.location.href = 'index_backup.html';">เลือกสินค้า</button>
   </div>
-
-  <div id="footInfo" class="result"></div>
-
-  <div class="product-list" id="product-list"></div>
-
-  <button class="back-btn" onclick="window.location.href = 'scan.html';">กลับไปสแกนเท้าใหม่</button>
-  <button class="choose-btn" onclick="window.location.href = 'index_backup.html';">เลือกสินค้า</button>
+</body>
 
 <script>
   const firebaseConfig = {
@@ -46,16 +49,38 @@
   document.getElementById("footConfidence").innerText = `ความแม่นยำ: ${footConfidence || "0"}%`;
   document.getElementById("footImage").src = capturedImage || "images/default-foot.png";
 
-  function printFootInfo(label) {
-    let footInfoMessage = "";
-    switch (normalizeFootLabel(label)) {
-      case "2 Normal Foot": footInfoMessage = "เท้าของคุณเป็นเท้าปกติ รองรับแรงได้ดี"; break;
-      case "0 Flat Foot": footInfoMessage = "เท้าของคุณเป็นเท้าแบน ทำให้รับแรงกระแทกไม่ดี"; break;
-      case "1 Higharch Foot": footInfoMessage = "เท้าของคุณเป็นเท้าโค้งสูง แรงกระแทกจะกระจุกที่ส้นเท้าและหน้าเท้า"; break;
-      default: footInfoMessage = "ไม่สามารถระบุประเภทเท้าได้"; break;
-    }
-    document.getElementById("footInfo").innerText = footInfoMessage;
+function printFootInfo(label) {
+  let footInfoMessage = "";
+  let advice = "";
+
+  switch (normalizeFootLabel(label)) {
+    case "2 Normal Foot":
+      footInfoMessage = "เท้าของคุณเป็น **เท้าปกติ** ซึ่งมีส่วนโค้งของฝ่าเท้าที่เหมาะสม ทำให้สามารถกระจายแรงกดทับได้ดีทั่วฝ่าเท้า รองรับแรงกระแทกอย่างมีประสิทธิภาพ ช่วยลดความเสี่ยงต่ออาการปวดเมื่อยเท้าและเข่า";
+      advice = "✅ คำแนะนำ: ควรรักษาสุขภาพเท้าไว้แบบนี้ต่อไป เลือกรองเท้าที่ใส่สบาย มีพื้นรองรับแรงกระแทก และหลีกเลี่ยงการเดินเท้าเปล่าบนพื้นแข็งบ่อย ๆ";
+      break;
+
+    case "0 Flat Foot":
+      footInfoMessage = "เท้าของคุณเป็น **เท้าแบน** ซึ่งมีส่วนโค้งของฝ่าเท้าน้อยหรือแทบไม่มีเลย ทำให้แรงกระแทกเวลายืนหรือเดินกระจุกตัวที่ฝ่าเท้าโดยตรง อาจส่งผลให้เมื่อยง่าย ปวดส้นเท้าหรือหัวเข่า ควรเลือกใช้แผ่นรองเท้าที่ช่วยพยุงอุ้งเท้า";
+      advice = "⚠️ คำแนะนำ: ควรใช้แผ่นรองอุ้งเท้า เลือกรองเท้าที่ออกแบบมาสำหรับเท้าแบน และหลีกเลี่ยงรองเท้าพื้นบางหรือไม่มีซัพพอร์ต";
+      break;
+
+    case "1 Higharch Foot":
+      footInfoMessage = "เท้าของคุณเป็น **เท้าโค้งสูง** ส่วนโค้งของฝ่าเท้าจะยกสูงผิดปกติ ทำให้เวลายืนหรือเดิน แรงกดจะตกอยู่ที่ส้นเท้าและหน้าเท้ามากเป็นพิเศษ มีแนวโน้มเกิดอาการปวดส้นเท้า หรือเจ็บปลายเท้า ควรใช้แผ่นรองที่ช่วยกระจายแรงและซับแรงกระแทก";
+      advice = "⚠️ คำแนะนำ: ควรใช้แผ่นรองเท้าที่มีความนุ่ม ซัพพอร์ตส่วนหน้าเท้าและส้นเท้าได้ดี เพื่อลดแรงกดที่กระจุกตัว";
+      break;
+
+    default:
+      footInfoMessage = "ไม่สามารถระบุประเภทเท้าได้ โปรดลองสแกนใหม่อีกครั้ง";
+      advice = "";
+      break;
   }
+
+  document.getElementById("footInfo").innerHTML = `
+    <p>${footInfoMessage}</p>
+    ${advice ? `<p style="color: White;">${advice}</p>` : ""}
+  `;
+}
+
   printFootInfo(footLabel);
 
   // ✅ ฟังก์ชัน normalize label เพิ่มเข้ามาตรงนี้
