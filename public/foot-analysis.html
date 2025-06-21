@@ -49,9 +49,9 @@
   function printFootInfo(label) {
     let footInfoMessage = "";
     switch (normalizeFootLabel(label)) {
-      case "0 Normal Foot": footInfoMessage = "เท้าของคุณเป็นเท้าปกติ รองรับแรงได้ดี"; break;
-      case "1 Flat Foot": footInfoMessage = "เท้าของคุณเป็นเท้าแบน ทำให้รับแรงกระแทกไม่ดี"; break;
-      case "2 Higharch Foot": footInfoMessage = "เท้าของคุณเป็นเท้าโค้งสูง แรงกระแทกจะกระจุกที่ส้นเท้าและหน้าเท้า"; break;
+      case "2 Normal Foot": footInfoMessage = "เท้าของคุณเป็นเท้าปกติ รองรับแรงได้ดี"; break;
+      case "0 Flat Foot": footInfoMessage = "เท้าของคุณเป็นเท้าแบน ทำให้รับแรงกระแทกไม่ดี"; break;
+      case "1 Higharch Foot": footInfoMessage = "เท้าของคุณเป็นเท้าโค้งสูง แรงกระแทกจะกระจุกที่ส้นเท้าและหน้าเท้า"; break;
       default: footInfoMessage = "ไม่สามารถระบุประเภทเท้าได้"; break;
     }
     document.getElementById("footInfo").innerText = footInfoMessage;
