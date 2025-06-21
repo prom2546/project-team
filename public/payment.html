@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>หน้าชำระเงิน (QR พร้อมเพย์)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .payment-container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      width: 100%;
+      max-width: 540px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+    .confirm { background-color: #28a745; }
+    .cancel { background-color: #dc3545; }
+    #qrcode img {
+      margin: 20px 0;
+      width: 250px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="payment-container">
+  <h2>ยอดชำระ: <span id="amount">0.00</span> บาท</h2>
+  <div class="notice">กรุณาชำระเงินภายใน <span id="countdown">5:00</span> นาที</div>
+
+  <table id="productTable" style="width:100%; margin-top:20px;">
+    <thead><tr><th>สินค้า</th><th>จำนวน</th><th>ราคา/ชิ้น</th><th>รวม</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="qrcode"></div>
+
+  <div class="button-group" style="margin-top: 20px;">
+    <button class="button confirm" onclick="confirmPayment()">✅ ยืนยันการชำระเงิน</button>
+    <button class="button cancel" onclick="cancelOrder()">❌ ยกเลิก</button>
+  </div>
+</div>
+
+<div id="paymentSuccessModal" class="modal">
+  <div class="modal-content">
+    <h2>✅ ชำระเงินสำเร็จ!</h2>
+    <p>ขอบคุณที่ใช้บริการ</p>
+    <button class="button confirm" onclick="closeModal()">ปิด</button>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDhI8i5kimRPcJgEIKw0UmlaT2sN70Yazk",
+  authDomain: "this-pro-done.firebaseapp.com",
+  databaseURL: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "this-pro-done",
+  storageBucket: "this-pro-done.appspot.com",
+  messagingSenderId: "735519750080",
+  appId: "1:735519750080:web:226c4c7b1d7ba03420fa25"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+const params = new URLSearchParams(window.location.search);
+const amount = parseFloat(params.get("amount") || "0");
+const rawProducts = decodeURIComponent(params.get("products") || "[]");
+const footTypeParam = params.get("footType") || "0";
+
+document.getElementById("amount").innerText = amount.toFixed(2);
+document.getElementById("qrcode").innerHTML = `<img src="https://promptpay.io/0906698821/${amount.toFixed(2)}" alt="QR PromptPay">`;
+
+let parsedProducts = [];
+try {
+  parsedProducts = JSON.parse(rawProducts);
+  const tableBody = document.querySelector("#productTable tbody");
+  parsedProducts.forEach(item => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${item.name}</td><td>${item.quantity}</td><td>${item.price.toLocaleString()} ฿</td><td>${item.total.toLocaleString()} ฿</td>`;
+    tableBody.appendChild(row);
+  });
+} catch (e) { console.error(e); }
+
+let seconds = 300;
+const countdownDisplay = document.getElementById("countdown");
+const timer = setInterval(() => {
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  countdownDisplay.innerText = `${min}:${sec.toString().padStart(2, "0")}`;
+  if (seconds <= 0) {
+    clearInterval(timer);
+    document.querySelector(".notice").innerText = "หมดเวลาชำระเงิน กรุณาทำรายการใหม่";
+    disableButtons();
+    setTimeout(() => window.location.href = "index_backup.html", 3000);
+  }
+  seconds--;
+}, 1000);
+
+function disableButtons() {
+  document.querySelectorAll(".button").forEach(btn => {
+    btn.disabled = true;
+    btn.style.opacity = 0.6;
+  });
+}
+
+function generateOrderId() {
+  const now = new Date();
+  const y = now.getFullYear().toString();
+  const m = (now.getMonth() + 1).toString().padStart(2, "0");
+  const d = now.getDate().toString().padStart(2, "0");
+  const h = now.getHours().toString().padStart(2, "0");
+  const min = now.getMinutes().toString().padStart(2, "0");
+  const random = Math.floor(Math.random() * 90 + 10);
+  return `ODR${y}${m}${d}${h}${min}${random}`;
+}
+
+async function confirmPayment() {
+  disableButtons();
+  document.querySelector(".confirm").innerText = "⏳ กำลังบันทึก...";
+
+  const now = new Date();
+  const formattedDate = `${now.getDate().toString().padStart(2,"0")}/${(now.getMonth()+1).toString().padStart(2,"0")}/${now.getFullYear()+543}`;
+  const formattedTime = `${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")} น.`;
+
+  const orderData = {
+    "amount": amount,
+    "date": formattedDate,
+    "time": formattedTime,
+    "products": {},
+    "status": "Paid",
+    "orderId": generateOrderId(),
+    "createdAt": firebase.database.ServerValue.TIMESTAMP
+  };
+
+  parsedProducts.forEach((item, index) => {
+    orderData["products"][index] = {
+      "name": item.name,
+      "quantity": item.quantity
+    };
+  });
+
+  try {
+    await database.ref('orders').push(orderData);
+    document.getElementById('paymentSuccessModal').style.display = 'flex';
+    document.getElementById('qrcode').style.display = 'none';
+    document.querySelector('.button-group').style.display = 'none';
+    setTimeout(() => window.location.href = "index_backup.html", 3000);
+  } catch (err) {
+    alert("❌ เกิดข้อผิดพลาด");
+    console.error(err);
+    document.querySelector(".confirm").disabled = false;
+    document.querySelector(".confirm").innerText = "✅ ยืนยันการชำระเงิน";
+  }
+}
+
+function cancelOrder() {
+  clearInterval(timer);
+  disableButtons();
+  document.querySelector(".notice").innerText = "ยกเลิกคำสั่งซื้อเรียบร้อย";
+  setTimeout(() => window.location.href = "index_backup.html", 2000);
+}
+
+function closeModal() {
+  document.getElementById('paymentSuccessModal').style.display = 'none';
+  window.location.href = "index_backup.html";
+}
+</script>
+</body>
+</html>

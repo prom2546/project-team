@@ -1,0 +1,161 @@
+body {
+  background: #f4f4f4;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  padding-top: 70px;
+}
+
+.navbar {
+  background-color: #523adb;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 15px 0;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #28a745;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: #218838;
+  color: #ffd700 !important;
+}
+
+.cart-btn {
+  background-color: #ffc107;
+  color: #333;
+  border: none;
+  padding: 8px 20px;
+  font-size: 16px;
+  border-radius: 12px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s;
+}
+
+.cart-btn:hover {
+  background-color: #e0a800;
+  color: white;
+}
+
+.cart-btn .badge {
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -10px;
+}
+
+.sold-out {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: red;
+  color: white;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 5px;
+}
+
+/* ======================= */
+/* ส่วนที่ปรับให้ Carousel สวยขึ้น */
+/* ======================= */
+
+#offerCarousel {
+  background: url('image/ปก.jpg') no-repeat center center;
+  background-size: cover;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  padding: 50px 20px;  /* padding แคบลงเพื่อไม่ให้สูงเกิน */
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.carousel-inner {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.carousel-item {
+  text-align: center;
+}
+
+.carousel-item img {
+  width: 100%;
+  max-width: 300px;  /* ลดขนาดภาพ */
+  height: 300px;     /* ลดความสูงลง */
+  object-fit: contain;
+  border: 10px solid #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin: auto;
+  transition: transform 0.3s ease;
+  background: #fff;
+}
+
+.carousel-item img:hover {
+  transform: scale(1.05);
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  bottom: 10px;
+  font-size: 1rem;
+  
+}
+/* ======================= */
+/* ปรับขนาดกรอบสินค้าให้เล็กลง สวยขึ้นในแนวตั้ง */
+/* ======================= */
+
+.product-card {
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  background: #fff;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+}
+
+.product-card img {
+  width: 100%;
+  max-height: 260px;  /* ลดขนาดความสูงลง */
+  object-fit: contain;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* ปรับข้อความด้านในให้ดูสะอาดขึ้น */
+
+.product-card .card-body {
+  padding: 12px 8px;
+  font-size: 0.95rem;
+}
+
+.product-card h5 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.product-card p {
+  margin-bottom: 6px;
+}

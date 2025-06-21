@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>วิเคราะห์สุขภาพเท้าและแนะนำสินค้า</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(to bottom, #e0bbff, #c084fc, #f78fb3);
+      padding: 20px;
+      margin: 0;
+    }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      margin: auto;
+    }
+    h2 {
+      color: #c084fc;
+      text-align: center;
+    }
+    label {
+      margin-top: 15px;
+      display: block;
+      color: #7420a6;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #c084fc;
+      border-radius: 10px;
+      margin-top: 5px;
+      background: #f3e8ff;
+    }
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 15px;
+      background: #c084fc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #a56cf5;
+    }
+    #result {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .foot-label {
+      font-size: 24px;
+      font-weight: bold;
+      color: #7420a6;
+    }
+    .foot-desc {
+      margin-top: 10px;
+      color: #444;
+    }
+    #result img {
+      width: 250px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 3px solid #c084fc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>ประเมินสุขภาพเท้า</h2>
+  <form id="footForm">
+    <label>เมื่อเดินนาน คุณรู้สึกปวดฝ่าเท้าหรือไม่?</label>
+    <select id="q1" required>
+      <option value="">-- เลือก --</option>
+      <option value="often">ปวดบ่อย</option>
+      <option value="sometimes">ปวดบางครั้ง</option>
+      <option value="no">ไม่ปวดเลย</option>
+    </select>
+
+    <label>คุณมีอาการส้นเท้าแตกหรือไม่?</label>
+    <select id="q2" required>
+      <option value="">-- เลือก --</option>
+      <option value="severe">แตกมาก</option>
+      <option value="mild">แตกเล็กน้อย</option>
+      <option value="no">ไม่มี</option>
+    </select>
+
+    <label>รูปเท้าคุณเป็นแบบใด?</label>
+    <select id="q3" required>
+      <option value="">-- เลือก --</option>
+      <option value="flat">เท้าแบน</option>
+      <option value="higharch">เท้าโค้งสูง</option>
+      <option value="normal">ปกติ</option>
+    </select>
+
+    <label>คุณมีปัญหากลิ่นเท้า หรือเหงื่อมากหรือไม่?</label>
+    <select id="q4" required>
+      <option value="">-- เลือก --</option>
+      <option value="yes">ใช่</option>
+      <option value="no">ไม่ใช่</option>
+    </select>
+
+    <label>คุณมีกระดูกโปนหรือนิ้วเบี้ยวบ้างหรือไม่?</label>
+    <select id="q5" required>
+      <option value="">-- เลือก --</option>
+      <option value="yes">ใช่</option>
+      <option value="no">ไม่</option>
+    </select>
+
+    <button type="submit">ส่งข้อมูล</button>
+  </form>
+
+  <div id="result" style="display:none;"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDhI8i5kimRPcJgEIKw0UmlaT2sN70Yazk",
+  authDomain: "this-pro-done.firebaseapp.com",
+  projectId: "this-pro-done",
+  storageBucket: "this-pro-done.appspot.com",
+  messagingSenderId: "735519750080",
+  appId: "1:735519750080:web:226c4c7b1d7ba03420fa25"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const footData = {
+  flat: {
+    label: "เท้าแบน (Flat Foot)",
+    image: "flat.png",
+    desc: "คุณมีแนวโน้มเท้าแบน ควรใช้รองเท้าซัพพอร์ตอุ้งเท้าเพื่อป้องกันรองช้ำ"
+  },
+  higharch: {
+    label: "เท้าโค้งสูง (High Arch)",
+    image: "higharch.png",
+    desc: "คุณมีแนวโน้มเท้าโค้งสูง ควรใช้รองเท้าพื้นนุ่มและรองรับแรงกระแทก"
+  },
+  bunion: {
+    label: "เท้ามีปุ่มกระดูก (Bunion)",
+    image: "bunion.png",
+    desc: "ควรใช้รองเท้าที่ไม่บีบรัดนิ้ว และอุปกรณ์จัดเรียงนิ้วเท้า"
+  },
+  sweaty: {
+    label: "เท้ามีกลิ่นหรือเหงื่อมาก",
+    image: "sweaty.png",
+    desc: "ควรใช้สเปรย์ แป้ง และถุงเท้าที่ระบายอากาศได้ดี"
+  },
+  normal: {
+    label: "เท้าปกติ (Normal Foot)",
+    image: "normal.png",
+    desc: "เท้าของคุณไม่มีความเสี่ยงพิเศษ ใช้รองเท้าสุขภาพได้ทั่วไป"
+  }
+};
+
+function analyzeFootType() {
+  const q1 = document.getElementById("q1").value;
+  const q2 = document.getElementById("q2").value;
+  const q3 = document.getElementById("q3").value;
+  const q4 = document.getElementById("q4").value;
+  const q5 = document.getElementById("q5").value;
+
+  if (q5 === "yes") return "bunion";
+  if (q4 === "yes") return "sweaty";
+  if (q3 === "flat") return "flat";
+  if (q3 === "higharch") return "higharch";
+  return "normal";
+}
+
+async function fetchRecommendedProducts(footType) {
+  const q = query(collection(db, "products"), where("footType", "==", footType));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+async function renderResults(footType) {
+  const data = footData[footType];
+  const products = await fetchRecommendedProducts(footType);
+  const result = document.getElementById("result");
+
+  let productHTML = "";
+  if (products.length > 0) {
+    productHTML = products.map(p => `
+      <div style="margin-top: 20px;">
+        <img src="${p.image}" alt="${p.name}" style="width:150px; border-radius:10px; border:2px solid #ccc;" />
+        <div style="margin-top: 5px; font-weight: bold;">${p.name}</div>
+        <div>ราคา: ${p.price} บาท</div>
+        <a href="index.html?id=${p.id}" class="btn btn-sm btn-outline-success mt-2">ดูสินค้า</a>
+      </div>
+    `).join("");
+  } else {
+    productHTML = `
+      <p style="margin-top: 20px; color: red; font-weight: bold;">
+        ❌ ไม่พบสินค้าในประเภทเท้านี้ กรุณาตรวจสอบหน้า <a href="index.html" style="color: blue;">ร้านค้า</a>
+      </p>`;
+  }
+
+  result.innerHTML = `
+    <div class="foot-label">${data.label}</div>
+    <img src="${data.image}" />
+    <div class="foot-desc">${data.desc}</div>
+    <h3 style="margin-top: 30px; color: #7420a6;">สินค้าแนะนำสำหรับคุณ</h3>
+    ${productHTML}
+  `;
+  result.style.display = "block";
+  result.scrollIntoView({ behavior: "smooth" });
+}
+
+document.getElementById("footForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const footType = analyzeFootType();
+  await renderResults(footType);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #1e1e2f;
+    color: #f3f3f3;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+  h1 {
+    text-align: center;
+  }
+  .summary {
+    background: #2c2c3e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .chart-section {
+    background: #2c2c3e;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
+  

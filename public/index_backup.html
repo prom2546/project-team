@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOOTFIT Production</title>
+
+  <!-- Bootstrap & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="index_backup.css" />
+  <style>
+    .product-card {
+      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      background: #fff;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+    .product-card img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .product-card .card-body {
+      padding: 12px 8px;
+      font-size: 0.95rem;
+    }
+    .product-card h5 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .product-card p {
+      margin-bottom: 6px;
+    }
+    .sold-out {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: red;
+      color: white;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+<div id="app" class="container mt-4">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="home.html"><i class="fas fa-home"></i> FOOTFIT Production</a>
+      <div>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="scan.html"><i class="fas fa-eye"></i> สแกนเท้า</a>
+          </li>
+          <li class="nav-item">
+            <button class="cart-btn" @click="showCart = true">
+              <i class="fas fa-shopping-cart"></i> ตะกร้า
+              <span v-if="totalItems > 0" class="badge">{{ totalItems }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Carousel -->
+  <div id="offerCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active text-center">
+        <img src="image/แผ่นซอฟเจลรองจมูกเท้า.png" class="d-block mx-auto">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>แผ่นซอฟเจลรองจมูกเท้า</h5><p>ราคา: 219 ฿</p>
+        </div>
+      </div>
+      <div class="carousel-item text-center">
+        <img src="image/แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ.png" class="d-block mx-auto">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ</h5><p>ราคา: 259 ฿</p>
+        </div>
+      </div>
+      <div class="carousel-item text-center">
+        <img src="image/ถุงเท้ารองช้ำ.png" class="d-block mx-auto">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>ถุงเท้ารองช้ำ</h5><p>ราคา: 249 ฿</p>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+
+  <!-- Product List -->
+  <div class="row mt-4">
+    <div v-if="loading" class="text-center">
+      <div class="spinner-border text-primary"></div>
+      <p>กำลังโหลดสินค้า...</p>
+    </div>
+    <div v-for="(product, id) in products" :key="id" class="col-md-3 col-sm-6 mb-4">
+      <div class="card product-card shadow-sm position-relative" :class="{ 'opacity-50': product.stock <= 0 }" @click="openProductModal(id, product)">
+        <img :src="product.image || 'images/default.jpg'" class="card-img-top" @error="handleImgError">
+        <div v-if="product.stock <= 0" class="sold-out">SOLD OUT</div>
+        <div class="card-body text-center">
+          <h5>{{ product.name }}</h5>
+          <p>ราคา: {{ product.price }} ฿</p>
+          <p>คงเหลือ: {{ product.stock }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div v-if="selectedProduct" class="modal fade show d-block" style="background: rgba(0,0,0,0.5); z-index:1050;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selectedProduct.name }}</h5>
+          <button type="button" class="btn-close" @click="selectedProduct = null"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img :src="selectedProduct.image || 'images/default.jpg'" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
+          <p>ราคา: {{ selectedProduct.price }} ฿</p>
+          <p>คงเหลือ: {{ selectedProduct.stock }} ชิ้น</p>
+          <div class="d-flex justify-content-center align-items-center gap-3 my-3">
+            <button class="btn btn-danger" @click="changeQuantity(-1)">-</button>
+            <span style="font-size: 20px;">{{ quantity }}</span>
+            <button class="btn btn-success" @click="changeQuantity(1)">+</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="selectedProduct = null">ปิด</button>
+          <button class="btn btn-primary" @click="confirmAddToCart">เพิ่มไปยังตะกร้า</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div v-if="showCart" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ตะกร้าสินค้า</h5>
+          <button type="button" class="btn-close" @click="showCart = false"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            <li v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
+              {{ item.name }} x {{ item.quantity }}
+              <span><span class="badge bg-primary">{{ item.price * item.quantity }} ฿</span>
+              <button class="btn btn-sm btn-danger ms-2" @click.stop="removeFromCart(index)">ลบ</button></span>
+            </li>
+          </ul>
+          <p class="mt-3 text-end fw-bold">รวม: {{ totalPrice }} ฿</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" @click="checkout" :disabled="cart.length === 0">ชำระเงิน</button>
+          <button class="btn btn-danger" @click="showCart = false">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Vue Logic -->
+<script src="index_backup.js"></script>
+
+<script>
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    window.location.href = 'admin-login.html';
+  }
+});
+</script>
+<script>
+// ระบบ Inactivity Auto Redirect 30 วินาที
+let inactivityTimer;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    window.location.href = "home.html";
+  }, 30000); // 30 วินาที
+}
+
+['mousemove', 'keydown', 'click', 'touchstart'].forEach(evt => {
+  document.addEventListener(evt, resetInactivityTimer);
+});
+
+resetInactivityTimer();  // เริ่มจับเวลาทันทีตอนโหลดหน้า
+</script>
+
+</body>
+</html>

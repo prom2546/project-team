@@ -1,0 +1,37 @@
+body {
+    background: linear-gradient(to bottom, #e0bbff, #c084fc, #f78fb3);
+    font-family: Arial, sans-serif;
+  }
+  
+  .navbar {
+    background-color: #c084fc !important;
+  }
+  
+  .navbar-brand, .nav-link {
+    color: white !important;
+  }
+  
+  .btn-primary {
+    background-color: #c084fc;
+    border-color: #a56cf5;
+  }
+  
+  .btn-primary:hover {
+    background-color: #a56cf5;
+    border-color: #9242e2;
+  }
+  
+  .card {
+    border: 2px solid #c084fc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card-title {
+    color: #c084fc;
+  }
+  
+  .modal-content {
+    border: 3px solid #c084fc;
+  }
+  

@@ -1,0 +1,104 @@
+import time
+import json
+import firebase_admin
+from firebase_admin import credentials, db
+import RPi.GPIO as GPIO
+# 🔧 Firebase Setup
+cred = credentials.Certificate("/home/admin/Desktop/this-pro-done-firebase-adminsdk-fbsvc-72157f3dbb.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app'
+})
+orders_ref = db.reference('orders')
+# ⚙️ Relay Pin Mapping (สินค้า → (PIN, Runtime))
+PRODUCT_MAPPING = {
+    "ถุงเท้ารองช้ำ": (25, 5),
+    "แผ่นซอฟเจลรองจมูกเท้า": (16, 4.6),
+    "แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ": (5, 4.5),    
+    "ปลอกเจลซิลิโคนรองส้นเท้า": (6, 4.5),
+    "ผ้ารองฝ่าเท้าลดปวด": (17, 5),
+    "ผ้ารองส้น ลดปวดส้นเท้า แก้รองช้ำ": (27,4.8),
+    "ซิลิโคนถนอมส้นเท้า ใส่ได้ทั้งชายหญิง": (22, 5),
+    "เทปผ้า ล๊อคนิ้ว": (26, 4.55),
+    "สายรัดใต้ฝ่าเท้า ลดปวดฝ่าเท้า": (21, 4.55),
+    "ถุงเท้าเสริมอุ้งเท้า": (23, 4.6),
+    "ซิลิโคนคลุมนิ้วโป้ง": (24, 4.55),
+    #"ถุงเท้าซิลิโคนถนอมเท้า แบบเต็มเท้า": (,),
+}
+# 🔌 GPIO Setup
+GPIO.setmode(GPIO.BCM)
+for pin, _ in PRODUCT_MAPPING.values():
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.HIGH)  # ปิดคอนเวเยอร์เริ่มต้น
+# 📦 อัปเดตสถานะคำสั่งซื้อ
+def update_order_status(order_id, status):
+    try:
+        order_ref = db.reference(f'orders/{order_id}')
+        order_ref.update({"status": status})
+        print(f"📦 อัปเดตคำสั่งซื้อ {order_id} → '{status}' สำเร็จ")
+    except Exception as e:
+        print(f"[ERROR] อัปเดตสถานะล้มเหลว: {e}")
+# 🔄 แปลง products เป็น list เสมอ
+def parse_products(raw):
+    if isinstance(raw, str):
+        try:
+            return json.loads(raw)
+        except:
+            return []
+    elif isinstance(raw, dict):
+        return [{"name": k, "quantity": v} for k, v in raw.items()]
+    elif isinstance(raw, list):
+        return raw
+    return []
+# 🚚 ประมวลผลคำสั่งซื้อ
+def process_order(order_id, products):
+    for item in products:
+        name_raw = item.get("name", "")
+        name = name_raw.strip().replace("  ", " ")
+        qty = item.get("quantity", 1)
+        if name in PRODUCT_MAPPING:
+            pin, runtime = PRODUCT_MAPPING[name]
+            print(f"\n🚚 เริ่มส่ง: {name} (PIN {pin}) จำนวน {qty} ชิ้น")
+            for i in range(qty):
+                print(f"  🔄 กำลังส่งชิ้นที่ {i+1}")
+                GPIO.output(pin, GPIO.LOW)
+                time.sleep(runtime)
+                GPIO.output(pin, GPIO.HIGH)
+                print(f"  ✅ ส่งชิ้นที่ {i+1} เสร็จสิ้น")
+        else:
+            print(f"[WARN] ไม่มีคอนเวเยอร์สำหรับสินค้า: {name}")
+    update_order_status(order_id, "ready")
+    print(f"✅ คำสั่งซื้อ {order_id} ประมวลผลเสร็จสิ้น\n")
+# 🛰 ฟังคำสั่งซื้อ
+def listen_for_orders():
+    print("🚀 ระบบพร้อมทำงานแล้ว...")
+    total_processed_items = 0
+    first_check = True
+    try:
+        while True:
+            orders = orders_ref.get() or {}
+            if first_check:
+                print(f"📦 คำสั่งซื้อที่มีอยู่ตอนเริ่มระบบ: {len(orders)} รายการ")
+                first_check = False
+            for order_id, data in orders.items():
+                status = (data.get("status") or "").lower()
+                if status != "paid":
+                    continue
+                raw_products = data.get("products", [])
+                products = parse_products(raw_products)
+                if not products:
+                    print(f"[WARN] คำสั่งซื้อ {order_id} ไม่มีสินค้า")
+                    continue
+                print(f"\n🔔 ตรวจพบคำสั่งซื้อใหม่: {order_id}")
+                process_order(order_id, products)
+                # ✅ หลังส่งสินค้าเสร็จ เพิ่มยอดสินค้า
+                items_in_this_order = sum(item.get("quantity", 1) for item in products)
+                total_processed_items += items_in_this_order
+                print(f"📈 ยอดรวมที่ส่งแล้ว: {total_processed_items} ชิ้น")
+            time.sleep(2)
+    except KeyboardInterrupt:
+        print("\n🛑 หยุดระบบโดยผู้ใช้")
+    finally:
+        GPIO.cleanup()
+# ▶️ Main
+if __name__ == '__main__':
+    listen_for_orders()

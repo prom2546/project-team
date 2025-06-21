@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .user-profile {
+      width: 131px;
+      height: 51px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      background: linear-gradient(
+        to bottom right,
+        #2e8eff 0%,
+        rgba(46, 142, 255, 0) 30%
+      );
+      background-color: rgba(46, 142, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .user-profile:hover,
+    .user-profile:focus {
+      background-color: rgba(46, 142, 255, 0.7);
+      box-shadow: 0 0 10px rgba(46, 142, 255, 0.5);
+      outline: none;
+    }
+
+    .user-profile-inner {
+      width: 127px;
+      height: 47px;
+      border-radius: 13px;
+      background-color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .user-profile-inner svg {
+      width: 27px;
+      height: 27px;
+      fill: #fff;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+      display: none;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>เข้าสู่ระบบผู้ดูแล</h2>
+    <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่านแอดมิน" />
+
+    <!-- Custom Button -->
+    <div aria-label="User Login Button" tabindex="0" role="button" class="user-profile" onclick="checkLogin()">
+      <div class="user-profile-inner">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g data-name="Layer 2" id="Layer_2">
+            <path d="m15.626 11.769a6 6 0 1 0 -7.252 0 9.008 9.008 0 0 0 -5.374 8.231 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 9.008 9.008 0 0 0 -5.374-8.231zm-7.626-4.769a4 4 0 1 1 4 4 4 4 0 0 1 -4-4zm10 14h-12a1 1 0 0 1 -1-1 7 7 0 0 1 14 0 1 1 0 0 1 -1 1z"/>
+          </g>
+        </svg>
+        <p>Log In</p>
+      </div>
+    </div>
+
+    <div class="error" id="errorMsg">❌ รหัสผ่านไม่ถูกต้อง</div>
+  </div>
+
+  <script>
+    function checkLogin() {
+      const password = document.getElementById("adminPassword").value;
+      const correctPassword = "123456"; // กำหนดรหัสผ่าน
+  
+      if (password === correctPassword) {
+        localStorage.setItem("adminLoggedIn", "true");
+        window.location.href = "admin.html"; // ไปหน้า Admin หลังจาก login
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>หน้าต้อนรับ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      background-image: url('image/BG.png');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      overflow: hidden;
+      cursor: pointer; /* เปลี่ยนให้รู้ว่าคลิกได้ทั้งหน้า */
+    }
+    .overlay {
+      padding: 3rem 4rem;
+      border-radius: 20px;
+      color: #000;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 3rem;
+      color: #00e4b2;
+      margin-bottom: 1rem;
+      text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    h2 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1rem;
+      color: #000;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      color: #000;
+      margin-bottom: 2rem;
+    }
+    .logo {
+      margin-top: 1.5rem;
+      width: 300px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body onclick="location.href='menu.html'">
+
+  <div class="overlay">
+    <h1>WELCOME</h1>
+    <h2>FOOTFIT VENDING MACHINE</h2>
+    <img src="image/logo.png" alt="FOOTFIT Logo" class="logo">
+    <h3>"เพราะสุขภาพดี เริ่มจากตัวเรา"</h3>
+    <h3>ก้าวให้ไกลเพื่อสุขภาพและชีวิตของลูกหลาน</h3>
+  </div>
+
+</body>
+</html>

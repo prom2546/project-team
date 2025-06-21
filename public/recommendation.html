@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แนะนำสินค้าตามประเภทเท้า</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .info {
+      font-size: 1.2em;
+      color: #444;
+    }
+    .product {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    .btn {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>🦶 ผลการสแกนสุขภาพเท้า</h1>
+  <div id="footType"></div>
+  <div id="recommendation" class="info"></div>
+
+  <div id="product-list"></div>
+
+  <button class="btn" onclick="goBack()">กลับไปหน้าแรก</button>
+
+  <script>
+    window.onload = function() {
+      const footType = localStorage.getItem('footType');
+      const recommendation = localStorage.getItem('recommendation');
+      const products = JSON.parse(localStorage.getItem('products'));
+
+      document.getElementById('footType').innerText = `ประเภทเท้าของคุณ: ${footType}`;
+      document.getElementById('recommendation').innerText = `คำแนะนำ: ${recommendation}`;
+
+      const productList = document.getElementById('product-list');
+      if (Object.keys(products).length === 0) {
+        productList.innerHTML = "<p>ไม่มีสินค้าที่แนะนำสำหรับประเภทเท้านี้</p>";
+      } else {
+        for (const productId in products) {
+          const product = products[productId];
+          const productDiv = document.createElement('div');
+          productDiv.classList.add('product');
+          productDiv.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <p><strong>${product.name}</strong></p>
+            <p>ราคา: ฿${product.price}</p>
+            <p>สต็อก: ${product.stock} ชิ้น</p>
+          `;
+          productList.appendChild(productDiv);
+        }
+      }
+    };
+
+    function goBack() {
+      window.location.href = 'index_backup.html';
+    }
+  </script>
+</body>
+</html>

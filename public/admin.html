@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="dark-dashboard.css" />
+
+  <!-- Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Check Login -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (!localStorage.getItem("adminLoggedIn")) {
+        window.location.href = "admin-login.html";
+      }
+    });
+  </script>
+
+  <!-- Firebase Config -->
+  <script src="firebase-config.js"></script>
+</head>
+
+<body>
+<div class="dashboard">
+  <aside class="sidebar">
+    <h2>Admin</h2>
+    <nav>
+      <a href="#" class="active" onclick="showSection('dashboard')">📊 Dashboard</a>
+      <a href="#" onclick="showSection('products')">📦 Products</a>
+      <a href="#" onclick="showSection('sales')">📈 Sales Report</a>
+      <a href="#" onclick="showSection('settings')">⚙️ Settings</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header><h1 id="section-title">Dashboard</h1></header>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="main-section">
+      <div class="charts">
+        <div class="chart-box"><h3>รายได้ต่อวัน</h3><canvas id="dailyRevenueChart"></canvas></div>
+        <div class="chart-box"><h3>ยอดขายต่อประเภทสินค้า</h3><canvas id="salesByFootTypeChart"></canvas></div>
+        <div class="chart-box"><h3>สินค้าเหลือน้อยที่สุด</h3><canvas id="lowStockChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="main-section" style="display:none">
+      <h2>📦 จัดการสินค้า</h2>
+
+      <div class="admin-container">
+        <h3>เพิ่มสินค้าใหม่</h3>
+        <label>ชื่อสินค้า</label>
+        <input type="text" id="newProductName">
+        <label>ราคา (THB)</label>
+        <input type="number" id="newProductPrice">
+        <label>จำนวนเริ่มต้น</label>
+        <input type="number" id="newProductStock">
+        <label>ประเภทเท้าที่เหมาะสม</label>
+        <select id="newProductFootType">
+          <option value="">-- เลือกประเภทเท้า --</option>
+          <option value="2 Normal Foot">เท้าปกติ (normal)</option>
+          <option value="0 Flat Foot">เท้าแบน (flat)</option>
+          <option value="1 Higharch Foot">เท้าโค้งสูง (higharch)</option>
+        </select>
+        <label>ลิงก์รูปสินค้า</label>
+        <input type="text" id="newProductImage" placeholder="https://example.com/image.jpg">
+        <button onclick="addNewProduct()">เพิ่มสินค้า</button>
+      </div>
+
+      <div class="admin-container">
+        <h3>ปรับสต็อกสินค้า / ลบสินค้า</h3>
+
+        <label>เลือกสินค้า</label>
+        <select id="productSelect"></select>
+
+        <label>จำนวน</label>
+        <input type="number" id="stockAmount">
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button onclick="increaseStock()">➕ เพิ่มสต็อก</button>
+          <button onclick="decreaseStock()">➖ ลดสต็อก</button>
+        </div>
+
+        <hr style="margin:20px 0; border-color:#444;">
+
+        <label>เลือกลบสินค้า</label>
+        <select id="deleteProductSelect"></select>
+        <button onclick="deleteProduct()" style="margin-top:10px;">🗑️ ลบสินค้า</button>
+      </div>
+
+      <div class="admin-container">
+        <button onclick="goToStore()">🔙 กลับไปหน้าหลัก</button>
+      </div>
+    </section>
+
+    <!-- Sales -->
+    <section id="sales" class="main-section" style="display:none">
+      <h2>📈 รายงานยอดขาย</h2>
+      <div class="admin-container">
+        <p>ยอดขายรวม: <span id="totalSold">-</span> ชิ้น</p>
+        <p>รายได้รวม: <span id="totalRevenue">-</span> บาท</p>
+      </div>
+      <div class="chart-box"><h3>ยอดขายแยกตามประเภทเท้า</h3><canvas id="salesByTypeChart"></canvas></div>
+      <div class="chart-box"><h3>Top 5 สินค้าขายดี</h3><canvas id="topProductsChart"></canvas></div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="main-section" style="display:none">
+      <h2>⚙️ ตั้งค่าระบบ</h2>
+      <p>Browser: <span id="browserInfo"></span></p>
+      <p>Language: <span id="langInfo"></span></p>
+      <p>Time Zone: <span id="tzInfo"></span></p>
+    </section>
+
+  </main>
+</div>
+
+<script src="product-manager.js"></script>
+<script src="dashboard.js"></script>
+<script src="sales-reports.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+0 Flat Foot
+1 Higharch Foot
+2 Normal Foot
