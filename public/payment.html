@@ -204,6 +204,15 @@ function closeModal() {
   document.getElementById('paymentSuccessModal').style.display = 'none';
   window.location.href = "index_backup.html";
 }
+// ระบบ Inactivity Auto Redirect 5.20นาที
+let inactivityTimer;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    window.location.href = "home.html";
+  }, 312000); // 5.20 นาที
+}
 </script>
 </body>
 </html>

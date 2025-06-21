@@ -30,15 +30,13 @@ async function loadProductOptions() {
     }
 
     Object.entries(data).forEach(([id, product]) => {
-  const option = document.createElement("option");
-  option.value = id;
-  option.textContent = product.name;
-  productSelect.appendChild(option.cloneNode(true));
-  deleteProductSelect.appendChild(option.cloneNode(true));
-});
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = product.name + (product.footType ? ` (${product.footType})` : "");
+      productSelect.appendChild(option.cloneNode(true));
+      deleteProductSelect.appendChild(option.cloneNode(true));
+    });
 
-
-    // เลือก default ตัวแรกให้อัตโนมัติ (ถ้ามีสินค้า)
     const firstId = Object.keys(data)[0];
     productSelect.value = firstId;
     deleteProductSelect.value = firstId;
@@ -55,15 +53,23 @@ async function addNewProduct() {
     const name = document.getElementById("newProductName").value.trim();
     const price = parseFloat(document.getElementById("newProductPrice").value);
     const stock = parseInt(document.getElementById("newProductStock").value);
-    const footType = document.getElementById("newProductFootType").value;
-    const image = document.getElementById("newProductImage").value;
+    const footType = document.getElementById("newProductFootType").value.trim();
+    const image = document.getElementById("newProductImage").value.trim();
 
     if (!name || isNaN(price) || isNaN(stock) || !footType) {
       alert("❌ กรุณากรอกข้อมูลให้ครบ");
       return;
     }
 
-    const newProduct = { name, price, stock, footType, image, visible: true, sold: 0 };
+    const newProduct = {
+      name,
+      price,
+      stock,
+      sold: 0,
+      visible: true,
+      footType,
+      image: image || "images/default.jpg"
+    };
 
     await fetch(FULL_URL, {
       method: "POST",

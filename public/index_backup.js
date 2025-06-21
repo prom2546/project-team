@@ -22,14 +22,32 @@ createApp({
   },
   methods: {
     async loadProducts() {
-      const res = await fetch(`${this.apiBaseUrl}/products.json`);
-      const all = await res.json();
-      const filtered = {};
-      for (const id in all) {
-        if (all[id].visible) filtered[id] = all[id];
+      try {
+        const res = await fetch(`${this.apiBaseUrl}/products.json`);
+        const all = await res.json();
+        const filtered = {};
+
+        for (const id in all) {
+          const p = all[id];
+          if (p.visible !== false) {
+            filtered[id] = {
+              id,
+              name: p.name || "ไม่มีชื่อสินค้า",
+              price: p.price || 0,
+              stock: p.stock ?? 0,
+              image: p.image || "images/default.jpg",
+              footType: p.footType || "ไม่ระบุ",
+              visible: p.visible
+            };
+          }
+        }
+
+        this.products = filtered;
+      } catch (error) {
+        console.error("❌ โหลดสินค้าล้มเหลว:", error);
+      } finally {
+        this.loading = false;
       }
-      this.products = filtered;
-      this.loading = false;
     },
 
     openProductModal(id, product) {
@@ -38,7 +56,11 @@ createApp({
     },
 
     changeQuantity(amount) {
-      if (this.quantity + amount > 0 && this.quantity + amount <= this.selectedProduct.stock) {
+      if (
+        this.selectedProduct &&
+        this.quantity + amount > 0 &&
+        this.quantity + amount <= this.selectedProduct.stock
+      ) {
         this.quantity += amount;
       }
     },
@@ -64,6 +86,7 @@ createApp({
         });
       }
 
+      // ลด stock
       product.stock -= this.quantity;
       await fetch(`${this.apiBaseUrl}/products/${this.selectedProduct.id}.json`, {
         method: "PATCH",
@@ -77,6 +100,8 @@ createApp({
     async removeFromCart(index) {
       const item = this.cart[index];
       const product = this.products[item.id];
+      if (!product) return;
+
       product.stock++;
 
       await fetch(`${this.apiBaseUrl}/products/${item.id}.json`, {
@@ -105,7 +130,6 @@ createApp({
 
       const footType = localStorage.getItem("footType") || "0";
 
-      // ไปหน้าชำระเงิน
       window.location.href = `payment.html?amount=${amount}&products=${encodeURIComponent(JSON.stringify(products))}&footType=${footType}`;
     },
 
@@ -113,14 +137,13 @@ createApp({
       e.target.src = "images/default.jpg";
     }
   },
-
   mounted() {
     this.loadProducts();
   }
 }).mount("#app");
 
-// ปุ่มลัดกด Enter เพื่อเข้า Admin
-document.addEventListener('keydown', function(event) {
+// ปุ่ม Enter เข้าหน้า admin
+document.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     window.location.href = 'admin.html';
   }

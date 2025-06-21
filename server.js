@@ -149,3 +149,24 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
+
+// เพิ่ม endpoint สำหรับอัปโหลดรูปสินค้า
+const imageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/image/");
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, Date.now() + ext);
+  },
+});
+const imageUpload = multer({ storage: imageStorage });
+
+app.post("/upload-image", imageUpload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  const imageUrl = `/image/${req.file.filename}`;
+  res.json({ imageUrl });
+});

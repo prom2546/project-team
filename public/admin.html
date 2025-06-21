@@ -4,26 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="dark-dashboard.css" />
-
-  <!-- Library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-  <!-- Check Login -->
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhI8i5kimRPcJgEIKw0UmlaT2sN70Yazk",
+      authDomain: "this-pro-done.firebaseapp.com",
+      databaseURL: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "this-pro-done",
+      storageBucket: "this-pro-done.appspot.com",
+      messagingSenderId: "735519750080",
+      appId: "1:735519750080:web:226c4c7b1d7ba03420fa25"
+    };
+    firebase.initializeApp(firebaseConfig);
+
     window.addEventListener("DOMContentLoaded", () => {
       if (!localStorage.getItem("adminLoggedIn")) {
         window.location.href = "admin-login.html";
       }
     });
   </script>
-
-  <!-- Firebase Config -->
-  <script src="firebase-config.js"></script>
 </head>
 
 <body>
@@ -42,16 +44,23 @@
   <main class="main">
     <header><h1 id="section-title">Dashboard</h1></header>
 
-    <!-- Dashboard -->
     <section id="dashboard" class="main-section">
       <div class="charts">
-        <div class="chart-box"><h3>รายได้ต่อวัน</h3><canvas id="dailyRevenueChart"></canvas></div>
-        <div class="chart-box"><h3>ยอดขายต่อประเภทสินค้า</h3><canvas id="salesByFootTypeChart"></canvas></div>
-        <div class="chart-box"><h3>สินค้าเหลือน้อยที่สุด</h3><canvas id="lowStockChart"></canvas></div>
+        <div class="chart-box">
+          <h3>รายได้ต่อวัน</h3>
+          <canvas id="dailyRevenueChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>ยอดขายต่อประเภทสินค้า</h3>
+          <canvas id="salesByFootTypeChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>สินค้าเหลือน้อยที่สุด</h3>
+          <canvas id="lowStockChart"></canvas>
+        </div>
       </div>
     </section>
 
-    <!-- Products -->
     <section id="products" class="main-section" style="display:none">
       <h2>📦 จัดการสินค้า</h2>
 
@@ -66,66 +75,234 @@
         <label>ประเภทเท้าที่เหมาะสม</label>
         <select id="newProductFootType">
           <option value="">-- เลือกประเภทเท้า --</option>
-          <option value="2 Normal Foot">เท้าปกติ (normal)</option>
-          <option value="0 Flat Foot">เท้าแบน (flat)</option>
-          <option value="1 Higharch Foot">เท้าโค้งสูง (higharch)</option>
+          <option value="0 Normal Foot">เท้าปกติ</option>
+          <option value="1 Flat foot">เท้าแบน</option>
+          <option value="2 Higharch foot">เท้าโค้งสูง</option>
         </select>
-        <label>ลิงก์รูปสินค้า</label>
-        <input type="text" id="newProductImage" placeholder="https://example.com/image.jpg">
+        <label>ลิงก์ URL รูปสินค้า</label>
+        <input type="text" id="newProductImage" placeholder="image/ถุงเท้ารองช้ำ.png">
         <button onclick="addNewProduct()">เพิ่มสินค้า</button>
       </div>
 
       <div class="admin-container">
-        <h3>ปรับสต็อกสินค้า / ลบสินค้า</h3>
-
+        <h3>เพิ่ม/ลดสต็อกสินค้า</h3>
         <label>เลือกสินค้า</label>
         <select id="productSelect"></select>
-
-        <label>จำนวน</label>
+        <label>จำนวนที่ต้องการเพิ่มหรือลด</label>
         <input type="number" id="stockAmount">
-
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-          <button onclick="increaseStock()">➕ เพิ่มสต็อก</button>
-          <button onclick="decreaseStock()">➖ ลดสต็อก</button>
+          <button onclick="addStockToProduct()">➕ เพิ่มสต็อก</button>
+          <button onclick="reduceStockFromProduct()">➖ ลดสต็อก</button>
         </div>
+      </div>
 
-        <hr style="margin:20px 0; border-color:#444;">
-
-        <label>เลือกลบสินค้า</label>
+      <div class="admin-container">
+        <h3>ลบสินค้า</h3>
+        <label>เลือกสินค้าที่ต้องการลบ</label>
         <select id="deleteProductSelect"></select>
-        <button onclick="deleteProduct()" style="margin-top:10px;">🗑️ ลบสินค้า</button>
+        <button style="margin-top:10px;" onclick="deleteProduct()">🗑️ ลบสินค้า</button>
       </div>
 
       <div class="admin-container">
         <button onclick="goToStore()">🔙 กลับไปหน้าหลัก</button>
       </div>
     </section>
-
-    <!-- Sales -->
     <section id="sales" class="main-section" style="display:none">
       <h2>📈 รายงานยอดขาย</h2>
       <div class="admin-container">
-        <p>ยอดขายรวม: <span id="totalSold">-</span> ชิ้น</p>
-        <p>รายได้รวม: <span id="totalRevenue">-</span> บาท</p>
+        <p>🧾 ยอดขายรวม: <span id="totalSold">-</span> ชิ้น</p>
+        <p>💰 รายได้รวม: <span id="totalRevenue">-</span> บาท</p>
       </div>
-      <div class="chart-box"><h3>ยอดขายแยกตามประเภทเท้า</h3><canvas id="salesByTypeChart"></canvas></div>
-      <div class="chart-box"><h3>Top 5 สินค้าขายดี</h3><canvas id="topProductsChart"></canvas></div>
+      <div class="chart-box">
+        <h3>ยอดขายแยกตามประเภทเท้า</h3>
+        <canvas id="salesByTypeChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>สินค้า Top 5 ที่ขายดีที่สุด</h3>
+        <canvas id="topProductsChart"></canvas>
+      </div>
     </section>
 
-    <!-- Settings -->
     <section id="settings" class="main-section" style="display:none">
       <h2>⚙️ ตั้งค่าระบบ</h2>
-      <p>Browser: <span id="browserInfo"></span></p>
-      <p>Language: <span id="langInfo"></span></p>
-      <p>Time Zone: <span id="tzInfo"></span></p>
+      <p>Browser: <span id="browserInfo">Loading...</span></p>
+      <p>Language: <span id="langInfo">Loading...</span></p>
+      <p>Time Zone: <span id="tzInfo">Loading...</span></p>
     </section>
-
   </main>
 </div>
 
-<script src="product-manager.js"></script>
-<script src="dashboard.js"></script>
-<script src="sales-reports.js"></script>
+<!-- Scripts -->
+<script>
+const BASE_URL = "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app";
+const PRODUCTS_URL = `${BASE_URL}/products.json`;
+
+async function loadProductOptions() {
+  try {
+    const response = await fetch(PRODUCTS_URL);
+    const products = await response.json();
+    
+    const productSelect = document.getElementById("productSelect");
+    const deleteProductSelect = document.getElementById("deleteProductSelect");
+    productSelect.innerHTML = "";
+    deleteProductSelect.innerHTML = "";
+
+    if (products) {
+      Object.entries(products).forEach(([id, data]) => {
+        const option1 = document.createElement("option");
+        option1.value = id;
+        option1.textContent = data.name + (data.stock === 0 ? " (หมด)" : "");
+        productSelect.appendChild(option1);
+
+        const option2 = document.createElement("option");
+        option2.value = id;
+        option2.textContent = data.name;
+        deleteProductSelect.appendChild(option2);
+      });
+    }
+  } catch (err) {
+    alert("❌ โหลดรายการสินค้าล้มเหลว");
+    console.error(err);
+  }
+}
+
+async function addNewProduct() {
+  const name = document.getElementById("newProductName").value;
+  const price = Number(document.getElementById("newProductPrice").value);
+  const stock = Number(document.getElementById("newProductStock").value);
+  const footType = document.getElementById("newProductFootType").value;
+  const image = document.getElementById("newProductImage").value;
+
+  if (!name || price <= 0 || stock < 0 || !footType) {
+    alert("❌ กรุณากรอกข้อมูลให้ครบ!");
+    return;
+  }
+
+  const newProduct = { name, price, stock, footType, visible: true, sold: 0, image: image || "" };
+
+  try {
+    const response = await fetch(PRODUCTS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProduct)
+    });
+
+    if (response.ok) {
+      alert("✅ เพิ่มสินค้าใหม่สำเร็จ!");
+      loadProductOptions();
+    } else {
+      alert("❌ ไม่สามารถเพิ่มสินค้าได้");
+    }
+  } catch (err) {
+    alert("❌ เกิดข้อผิดพลาดขณะส่งข้อมูล");
+    console.error(err);
+  }
+}
+
+async function addStockToProduct() {
+  const productId = document.getElementById("productSelect").value;
+  const amount = Number(document.getElementById("stockAmount").value);
+
+  if (amount <= 0 || !productId) {
+    alert("❌ กรุณาใส่จำนวนและเลือกรายการ!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/products/${productId}.json`);
+    const product = await response.json();
+    const newStock = (product.stock || 0) + amount;
+
+    await fetch(`${BASE_URL}/products/${productId}.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stock: newStock })
+    });
+
+    alert("✅ เพิ่มสต็อกสำเร็จ!");
+    loadProductOptions();
+  } catch (err) {
+    alert("❌ เพิ่มสต็อกล้มเหลว");
+    console.error(err);
+  }
+}
+
+async function reduceStockFromProduct() {
+  const productId = document.getElementById("productSelect").value;
+  const amount = Number(document.getElementById("stockAmount").value);
+
+  if (amount <= 0 || !productId) {
+    alert("❌ กรุณาใส่จำนวนและเลือกรายการ!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/products/${productId}.json`);
+    const product = await response.json();
+    let newStock = (product.stock || 0) - amount;
+
+    if (newStock < 0) newStock = 0;
+
+    await fetch(`${BASE_URL}/products/${productId}.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stock: newStock })
+    });
+
+    alert("✅ ลดสต็อกสำเร็จ!");
+    loadProductOptions();
+  } catch (err) {
+    alert("❌ ลดสต็อกล้มเหลว");
+    console.error(err);
+  }
+}
+
+async function deleteProduct() {
+  const productId = document.getElementById("deleteProductSelect").value;
+
+  if (!productId) {
+    alert("❌ กรุณาเลือกสินค้าที่ต้องการลบ!");
+    return;
+  }
+
+  if (!confirm("⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?")) {
+    return;
+  }
+
+  try {
+    await fetch(`${BASE_URL}/products/${productId}.json`, {
+      method: "DELETE"
+    });
+    alert("✅ ลบสินค้าเรียบร้อยแล้ว!");
+    loadProductOptions();
+  } catch (err) {
+    alert("❌ ลบสินค้าล้มเหลว");
+    console.error(err);
+  }
+}
+
+function goToStore() {
+  window.location.href = "index_backup.html";
+}
+
+function showSection(sectionId) {
+  const sections = document.querySelectorAll(".main-section");
+  sections.forEach(section => section.style.display = "none");
+  document.getElementById(sectionId).style.display = "block";
+  document.getElementById("section-title").textContent = document.querySelector(`[onclick="showSection('${sectionId}')"]`).textContent;
+}
+
+function logout() {
+  localStorage.removeItem("adminLoggedIn");
+  window.location.href = "index_backup.html";
+}
+
+window.addEventListener("DOMContentLoaded", loadProductOptions);
+document.getElementById('browserInfo').textContent = navigator.userAgent;
+document.getElementById('langInfo').textContent = navigator.language;
+document.getElementById('tzInfo').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+</script>
 
 </body>
 </html>
+
