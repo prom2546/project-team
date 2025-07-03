@@ -5,44 +5,67 @@ const multer = require("multer");
 const path = require("path");
 const firebaseAdmin = require("firebase-admin");
 const fetch = require("node-fetch");
+const interceptor = require("express-interceptor");
+
 const app = express();
 
-// ใช้ CORS และ bodyParser (เพิ่มการตั้งค่า limit)
+// ✅ Touch Scroll Injector
+const touchScrollInjector = interceptor((req, res) => ({
+  isInterceptable: () => /text\/html/.test(res.get("Content-Type")),
+  intercept: (body, send) => {
+    const touchCSS = `
+      <style>
+        html, body {
+          overscroll-behavior: contain;
+          touch-action: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .scrollable {
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-y;
+        }
+      </style>
+    `;
+    const modifiedBody = body.toString().replace("</head>", `${touchCSS}</head>`);
+    send(modifiedBody);
+  }
+}));
+
+// ✅ Middleware
+app.use(touchScrollInjector);
 app.use(cors());
 app.use(bodyParser.json({ limit: "200mb" }));
 
-// ตั้งค่า Firebase
+// ✅ Firebase Admin Setup
 const serviceAccount = require("./this-pro-done-firebase-adminsdk-fbsvc-72157f3dbb.json");
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
   databaseURL: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
-
-// เข้าถึง Firebase Realtime Database
 const db = firebaseAdmin.database();
 
-// กำหนดที่เก็บไฟล์อัปโหลด
+// ✅ File Upload Setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-
 const upload = multer({ storage: storage });
 
-// เสิร์ฟไฟล์ static จาก public
+// ✅ Static Files
 app.use(express.static(path.join(__dirname, "public")));
 
-// เสิร์ฟหน้าแรกเป็น home.html
+// ✅ หน้าแรก
 app.get("/", (req, res) => {
   console.log("Serving home.html...");
   res.sendFile(path.resolve(__dirname, "public", "home.html"));
 });
 
-// ดึงสินค้าทั้งหมด (เฉพาะที่ visible = true)
+// ✅ API: ดึงสินค้า
 app.get("/products", async (req, res) => {
   try {
     const snapshot = await db.ref("products").once("value");
@@ -62,7 +85,7 @@ app.get("/products", async (req, res) => {
   }
 });
 
-// เพิ่มสินค้าใหม่ (พร้อม sold: 0)
+// ✅ API: เพิ่มสินค้า
 app.post("/products", async (req, res) => {
   try {
     const { name, price, stock } = req.body;
@@ -86,7 +109,7 @@ app.post("/products", async (req, res) => {
   }
 });
 
-// อัปเดตสต็อกสินค้า
+// ✅ API: อัปเดตสต็อก
 app.patch("/products/:id", async (req, res) => {
   try {
     const productId = req.params.id;
@@ -103,7 +126,7 @@ app.patch("/products/:id", async (req, res) => {
   }
 });
 
-// บันทึกคำสั่งซื้อ
+// ✅ API: บันทึกคำสั่งซื้อ
 app.post("/orders", async (req, res) => {
   try {
     const order = req.body;
@@ -116,7 +139,7 @@ app.post("/orders", async (req, res) => {
   }
 });
 
-// เสิร์ฟข้อมูลการสแกนจากหน้าจอ
+// ✅ API: สแกนเท้า
 app.post("/scan", upload.single("image"), async (req, res) => {
   try {
     const imageData = req.file.path;
@@ -133,7 +156,7 @@ app.post("/scan", upload.single("image"), async (req, res) => {
   }
 });
 
-// เพิ่มฟังก์ชันในการรับการวิเคราะห์เท้าจากหน้าเว็บ
+// ✅ API: foot-type
 app.get("/foot-type", async (req, res) => {
   try {
     const snapshot = await db.ref("foot-type").once("value");
@@ -144,13 +167,7 @@ app.get("/foot-type", async (req, res) => {
   }
 });
 
-// เริ่มต้นเซิร์ฟเวอร์
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
-});
-
-// เพิ่ม endpoint สำหรับอัปโหลดรูปสินค้า
+// ✅ API: อัปโหลดรูปสินค้า
 const imageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/image/");
@@ -158,7 +175,7 @@ const imageStorage = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, Date.now() + ext);
-  },
+  }
 });
 const imageUpload = multer({ storage: imageStorage });
 
@@ -169,4 +186,10 @@ app.post("/upload-image", imageUpload.single("image"), (req, res) => {
 
   const imageUrl = `/image/${req.file.filename}`;
   res.json({ imageUrl });
+});
+
+// ✅ เริ่มเซิร์ฟเวอร์
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on http://localhost:${PORT}`);
 });

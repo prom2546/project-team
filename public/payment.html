@@ -5,28 +5,49 @@
   <title>หน้าชำระเงิน (QR พร้อมเพย์)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kiosk-style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: 'Sarabun', sans-serif;
-      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      background: linear-gradient(135deg,
+        #1b0033 0%,     /* Midnight violet */
+        #2a0f5c 20%,    /* Deep purple */
+        #3a1c78 40%,    /* Indigo */
+        #4c2c90 60%,    /* Violet */
+        #6d4dc3 80%,    /* Purple Blue */
+        #a67eea 100%    /* Soft lavender */
+      );
+      background-attachment: fixed;
+      background-size: 200% 200%;
+      animation: gradientShift 15s ease infinite;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: white;
     }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .payment-container {
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       text-align: center;
       width: 100%;
       max-width: 540px;
+      backdrop-filter: blur(10px);
     }
+
     .modal {
       display: none;
       position: fixed;
@@ -34,17 +55,21 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.7);
       justify-content: center;
       align-items: center;
       z-index: 9999;
     }
+
     .modal-content {
-      background: white;
+      background: #2a0f5c;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 15px;
       text-align: center;
+      color: white;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     }
+
     .button {
       padding: 12px 24px;
       font-size: 16px;
@@ -52,12 +77,38 @@
       border-radius: 8px;
       cursor: pointer;
       color: white;
+      margin: 5px;
     }
-    .confirm { background-color: #28a745; }
-    .cancel { background-color: #dc3545; }
+
+    .confirm {
+      background: linear-gradient(45deg, #00e4b2, #7f4fff);
+    }
+
+    .cancel {
+      background: linear-gradient(45deg, #ff4081, #dc3545);
+    }
+
     #qrcode img {
       margin: 20px 0;
       width: 250px;
+      border: 6px solid white;
+      border-radius: 15px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      color: white;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    th {
+      background-color: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>

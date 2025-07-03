@@ -4,12 +4,149 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ผลการวิเคราะห์เท้าของคุณ</title>
-  <link rel="stylesheet" href="foot-analysis.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Sarabun&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kiosk-style.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Sarabun', sans-serif;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #0a001f 0%, #1b0044 30%, #2a0066 50%, #3f0088 70%, #5e00b3 100%);
+      color: white;
+    }
+
+    .gradient-stripes {
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        60deg,
+        rgba(255, 0, 255, 0.05),
+        rgba(0, 255, 255, 0.05) 10%,
+        transparent 20%
+      );
+      animation: moveGradient 60s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes moveGradient {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://raw.githubusercontent.com/JulianLaval/canvas-particle-network/master/demo/img/stars.png') repeat;
+      animation: moveStars 180s linear infinite;
+      opacity: 0.25;
+      z-index: 1;
+    }
+
+    @keyframes moveStars {
+      from { background-position: 0 0; }
+      to { background-position: 10000px 5000px; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: #e0aaff;
+      text-shadow: 0 0 10px #ff66cc;
+    }
+
+   #footImage {
+  wiwidth: 100%;
+    max-width: 600px; /* ปรับตรงนี้ตามคำขอ */
+    height: auto;
+    margin-top: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+
+    .result p {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      color: #ccccff;
+    }
+
+    .product-list {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .product-item {
+      background-color: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 15px;
+      width: 200px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+
+    .product-item:hover {
+      transform: scale(1.05);
+    }
+
+    .product-item img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 1rem 10px 0;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, #66ccff, #6699ff);
+      color: white;
+    }
+
+    .choose-btn {
+      background: linear-gradient(135deg, #ff66cc, #9966ff);
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-4px);
+      filter: brightness(1.1);
+    }
+
+    @media (max-width: 768px) {
+      #footImage { width: 90%; }
+      .product-item { width: 90%; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-<body>
+  <div class="gradient-stripes"></div>
+  <div class="stars"></div>
+
   <div class="container">
     <h1>ผลการวิเคราะห์เท้าของคุณ</h1>
 
@@ -26,110 +163,108 @@
     <button class="back-btn" onclick="window.location.href = 'scan.html';">กลับไปสแกนเท้าใหม่</button>
     <button class="choose-btn" onclick="window.location.href = 'index_backup.html';">เลือกสินค้า</button>
   </div>
-</body>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDhI8i5kimRPcJgEIKw0UmlaT2sN70Yazk",
-    authDomain: "this-pro-done.firebaseapp.com",
-    databaseURL: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "this-pro-done",
-    storageBucket: "this-pro-done.appspot.com",
-    messagingSenderId: "735519750080",
-    appId: "1:735519750080:web:226c4c7b1d7ba03420fa25",
-    measurementId: "G-Y4N2ERD40J"
-  };
-  firebase.initializeApp(firebaseConfig);
+  <!-- Firebase + JS -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhI8i5kimRPcJgEIKw0UmlaT2sN70Yazk",
+      authDomain: "this-pro-done.firebaseapp.com",
+      databaseURL: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "this-pro-done",
+      storageBucket: "this-pro-done.appspot.com",
+      messagingSenderId: "735519750080",
+      appId: "1:735519750080:web:226c4c7b1d7ba03420fa25",
+      measurementId: "G-Y4N2ERD40J"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-  const footLabel = localStorage.getItem("footLabel");
-  const footConfidence = localStorage.getItem("footConfidence");
-  const capturedImage = localStorage.getItem("capturedImage");
+    const footLabel = localStorage.getItem("footLabel");
+    const footConfidence = localStorage.getItem("footConfidence");
+    const capturedImage = localStorage.getItem("capturedImage");
 
-  document.getElementById("footLabel").innerText = footLabel || "ไม่พบข้อมูล";
-  document.getElementById("footConfidence").innerText = `ความแม่นยำ: ${footConfidence || "0"}%`;
-  document.getElementById("footImage").src = capturedImage || "images/default-foot.png";
+    document.getElementById("footLabel").innerText = footLabel || "ไม่พบข้อมูล";
+    document.getElementById("footConfidence").innerText = `ความแม่นยำ: ${footConfidence || "0"}%`;
+    document.getElementById("footImage").src = capturedImage || "images/default-foot.png";
 
-function printFootInfo(label) {
-  let footInfoMessage = "";
-  let advice = "";
-
-  switch (normalizeFootLabel(label)) {
-    case "2 Normal Foot":
-      footInfoMessage = "เท้าของคุณเป็น **เท้าปกติ** ซึ่งมีส่วนโค้งของฝ่าเท้าที่เหมาะสม ทำให้สามารถกระจายแรงกดทับได้ดีทั่วฝ่าเท้า รองรับแรงกระแทกอย่างมีประสิทธิภาพ ช่วยลดความเสี่ยงต่ออาการปวดเมื่อยเท้าและเข่า";
-      advice = "✅ คำแนะนำ: ควรรักษาสุขภาพเท้าไว้แบบนี้ต่อไป เลือกรองเท้าที่ใส่สบาย มีพื้นรองรับแรงกระแทก และหลีกเลี่ยงการเดินเท้าเปล่าบนพื้นแข็งบ่อย ๆ";
-      break;
-
-    case "0 Flat Foot":
-      footInfoMessage = "เท้าของคุณเป็น **เท้าแบน** ซึ่งมีส่วนโค้งของฝ่าเท้าน้อยหรือแทบไม่มีเลย ทำให้แรงกระแทกเวลายืนหรือเดินกระจุกตัวที่ฝ่าเท้าโดยตรง อาจส่งผลให้เมื่อยง่าย ปวดส้นเท้าหรือหัวเข่า ควรเลือกใช้แผ่นรองเท้าที่ช่วยพยุงอุ้งเท้า";
-      advice = "⚠️ คำแนะนำ: ควรใช้แผ่นรองอุ้งเท้า เลือกรองเท้าที่ออกแบบมาสำหรับเท้าแบน และหลีกเลี่ยงรองเท้าพื้นบางหรือไม่มีซัพพอร์ต";
-      break;
-
-    case "1 Higharch Foot":
-      footInfoMessage = "เท้าของคุณเป็น **เท้าโค้งสูง** ส่วนโค้งของฝ่าเท้าจะยกสูงผิดปกติ ทำให้เวลายืนหรือเดิน แรงกดจะตกอยู่ที่ส้นเท้าและหน้าเท้ามากเป็นพิเศษ มีแนวโน้มเกิดอาการปวดส้นเท้า หรือเจ็บปลายเท้า ควรใช้แผ่นรองที่ช่วยกระจายแรงและซับแรงกระแทก";
-      advice = "⚠️ คำแนะนำ: ควรใช้แผ่นรองเท้าที่มีความนุ่ม ซัพพอร์ตส่วนหน้าเท้าและส้นเท้าได้ดี เพื่อลดแรงกดที่กระจุกตัว";
-      break;
-
-    default:
-      footInfoMessage = "ไม่สามารถระบุประเภทเท้าได้ โปรดลองสแกนใหม่อีกครั้ง";
-      advice = "";
-      break;
-  }
-
-  document.getElementById("footInfo").innerHTML = `
-    <p>${footInfoMessage}</p>
-    ${advice ? `<p style="color: White;">${advice}</p>` : ""}
-  `;
-}
-
-  printFootInfo(footLabel);
-
-  // ✅ ฟังก์ชัน normalize label เพิ่มเข้ามาตรงนี้
-  function normalizeFootLabel(label) {
-    if (!label) return "";
-    label = label.trim().toLowerCase();
-    if (label.includes("normal")) return "2 Normal Foot";
-    if (label.includes("flat")) return "0 Flat Foot";
-    if (label.includes("higharch") || label.includes("high foot") || label.includes("high")) return "1 Higharch Foot";
-    return label;
-  }
-
-  async function loadRecommendedProducts() {
-    const dbRef = firebase.database().ref("products");
-    const productListDiv = document.getElementById("product-list");
-    try {
-      const snapshot = await dbRef.once("value");
-      const data = snapshot.val();
-      if (!data) {
-        productListDiv.innerHTML = "<p>❌ ไม่มีข้อมูลใน Firebase</p>";
-        return;
-      }
-      
-      const normalizedLabel = normalizeFootLabel(footLabel);
-      const filteredProducts = Object.values(data).filter(product => product.footType === normalizedLabel && product.visible);
-      
-      if (filteredProducts.length === 0) {
-        productListDiv.innerHTML = "<p>❌ ไม่พบสินค้าที่แนะนำสำหรับประเภทเท้านี้</p>";
-        return;
-      }
-      
-      filteredProducts.forEach(product => {
-        productListDiv.innerHTML += `
-          <div class="product-item">
-            <img src="${product.image || 'images/default.jpg'}" alt="${product.name}">
-            <strong>${product.name}</strong>
-            ราคา: ${product.price} บาท<br>
-            คงเหลือ: ${product.stock} ชิ้น
-          </div>
-        `;
-      });
-    } catch (err) {
-      console.error("❌ Error fetching data from Firebase:", err);
-      productListDiv.innerHTML = "<p>❌ ไม่สามารถโหลดสินค้าจาก Firebase ได้</p>";
+    function normalizeFootLabel(label) {
+      if (!label) return "";
+      label = label.trim().toLowerCase();
+      if (label.includes("normal")) return "2 Normal Foot";
+      if (label.includes("flat")) return "0 Flat Foot";
+      if (label.includes("higharch") || label.includes("high foot") || label.includes("high")) return "1 Higharch Foot";
+      return label;
     }
+
+    function printFootInfo(label) {
+    let footInfoMessage = "";
+    let advice = "";
+
+    switch (normalizeFootLabel(label)) {
+      case "2 Normal Foot":
+        footInfoMessage = "เท้าของคุณเป็น <strong>เท้าปกติ</strong> ซึ่งมีส่วนโค้งของฝ่าเท้าที่เหมาะสม ทำให้สามารถกระจายแรงกดทับได้ดีทั่วฝ่าเท้า รองรับแรงกระแทกอย่างมีประสิทธิภาพ ช่วยลดความเสี่ยงต่ออาการปวดเมื่อยเท้าและเข่า";
+        advice = "✅ <strong>คำแนะนำ:</strong> ควรรักษาสุขภาพเท้าไว้แบบนี้ต่อไป เลือกรองเท้าที่ใส่สบาย มีพื้นรองรับแรงกระแทก และหลีกเลี่ยงการเดินเท้าเปล่าบนพื้นแข็งบ่อย ๆ";
+        break;
+
+      case "0 Flat Foot":
+        footInfoMessage = "เท้าของคุณเป็น <strong>เท้าแบน</strong> ซึ่งมีส่วนโค้งของฝ่าเท้าน้อยหรือแทบไม่มีเลย ทำให้แรงกระแทกเวลายืนหรือเดินกระจุกตัวที่ฝ่าเท้าโดยตรง อาจส่งผลให้เมื่อยง่าย ปวดส้นเท้าหรือหัวเข่า ควรเลือกใช้แผ่นรองเท้าที่ช่วยพยุงอุ้งเท้า";
+        advice = "⚠️ <strong>คำแนะนำ:</strong> ควรใช้แผ่นรองอุ้งเท้า เลือกรองเท้าที่ออกแบบมาสำหรับเท้าแบน และหลีกเลี่ยงรองเท้าพื้นบางหรือไม่มีซัพพอร์ต";
+        break;
+
+      case "1 Higharch Foot":
+        footInfoMessage = "เท้าของคุณเป็น <strong>เท้าโค้งสูง</strong> ส่วนโค้งของฝ่าเท้าจะยกสูงผิดปกติ ทำให้เวลายืนหรือเดิน แรงกดจะตกอยู่ที่ส้นเท้าและหน้าเท้ามากเป็นพิเศษ มีแนวโน้มเกิดอาการปวดส้นเท้า หรือเจ็บปลายเท้า ควรใช้แผ่นรองที่ช่วยกระจายแรงและซับแรงกระแทก";
+        advice = "⚠️ <strong>คำแนะนำ:</strong> ควรใช้แผ่นรองเท้าที่มีความนุ่ม ซัพพอร์ตส่วนหน้าเท้าและส้นเท้าได้ดี เพื่อลดแรงกดที่กระจุกตัว";
+        break;
+
+      default:
+        footInfoMessage = "ไม่สามารถระบุประเภทเท้าได้ โปรดลองสแกนใหม่อีกครั้ง";
+        advice = "";
+        break;
+    }
+
+    document.getElementById("footInfo").innerHTML = `
+      <p>${footInfoMessage}</p>
+      ${advice ? `<p style="color: white;">${advice}</p>` : ""}
+    `;
   }
+    async function loadRecommendedProducts() {
+      const dbRef = firebase.database().ref("products");
+      const productListDiv = document.getElementById("product-list");
+      try {
+        const snapshot = await dbRef.once("value");
+        const data = snapshot.val();
+        if (!data) {
+          productListDiv.innerHTML = "<p>❌ ไม่มีข้อมูลใน Firebase</p>";
+          return;
+        }
 
-  loadRecommendedProducts();
-</script>
+        const normalizedLabel = normalizeFootLabel(footLabel);
+        const filteredProducts = Object.values(data).filter(product => product.footType === normalizedLabel && product.visible);
 
+        if (filteredProducts.length === 0) {
+          productListDiv.innerHTML = "<p>❌ ไม่พบสินค้าที่แนะนำสำหรับประเภทเท้านี้</p>";
+          return;
+        }
+
+        filteredProducts.forEach(product => {
+          productListDiv.innerHTML += `
+            <div class="product-item">
+              <img src="${product.image || 'images/default.jpg'}" alt="${product.name}">
+              <strong>${product.name}</strong><br>
+              ราคา: ${product.price} บาท<br>
+              คงเหลือ: ${product.stock} ชิ้น
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error("❌ Error fetching data:", err);
+        productListDiv.innerHTML = "<p>❌ ไม่สามารถโหลดสินค้าจาก Firebase ได้</p>";
+      }
+    }
+
+    printFootInfo(footLabel);
+    loadRecommendedProducts();
+  </script>
 </body>
 </html>

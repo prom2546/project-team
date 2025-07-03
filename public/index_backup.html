@@ -8,313 +8,420 @@
   <!-- Bootstrap & FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="kiosk-style.css" />
 
   <!-- Vue 3 -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="index_backup.css" />
-  <style>
-    .product-card {
-      padding: 10px;
-      border-radius: 15px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease;
-      background: #fff;
-    }
-    .product-card:hover {
-      transform: scale(1.03);
-    }
-    .product-card img {
-      width: 100%;
-      max-height: 260px;
-      object-fit: contain;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    .product-card .card-body {
-      padding: 12px 8px;
-      font-size: 0.95rem;
-    }
-    .product-card h5 {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-    .product-card p {
-      margin-bottom: 6px;
-    }
-    .sold-out {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: red;
-      color: white;
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      border-radius: 5px;
-    }
-  </style>
+  <!-- Custom Style -->
+ <style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;500;700&display=swap');
+
+ body {
+  font-family: 'Sarabun', sans-serif;
+  margin: 0;
+  background-color: #3c1a75; /* สีม่วงเรียบ */
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #ffffff;
+  min-height: 100vh;
+  padding-top: 70px;
+}
+
+  .navbar {
+    background: rgba(30, 0, 60, 0.9);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .navbar-brand, .nav-link {
+    color: #fff !important;
+  }
+
+  .cart-btn {
+    background-color: #c08aff;
+    border: none;
+    padding: 6px 12px;
+    color: white;
+    border-radius: 10px;
+  }
+
+  .cart-btn .badge {
+    background-color: #ff70b0;
+  }
+
+  .carousel {
+    background-image: url('image/ปก.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .carousel-item img {
+    padding: 10px;
+    border-radius: 20px;
+    background: white;
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  .carousel-caption {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+ .card {
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(4px);
+  color: #fff;
+}
+
+  .card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+  .card img {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: white;
+    display: block;
+    margin: auto;
+  }
+
+  .card-body h5, .card-body p {
+    color: #ffffff;
+  }
+
+  .modal-content {
+    background-color: #26064f;
+    color: white;
+  }
+
+  .modal-header, .modal-footer {
+    border-color: #444;
+  }
+
+  .sold-out {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+  }
+
+  .btn-primary {
+    background-color: #a377ff;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #d3b3ff;
+  }
+
+  .btn-danger {
+    background-color: #ff4081;
+    border: none;
+  }
+
+  .btn-danger:hover {
+    background-color: #ff6d9e;
+  }
+
+  .btn-success {
+    background-color: #00e4b2; 
+    border: none;
+  }
+
+  .btn-success:hover {
+    background-color: #34ffc9;
+  }
+</style>
+
 </head>
 
 <body>
-<div id="app" class="container mt-4">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="home.html">
-        <i class="fas fa-home"></i> FOOTFIT Production
-      </a>
-      <div>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="scan.html"><i class="fas fa-eye"></i> สแกนเท้า</a>
-          </li>
-          <li class="nav-item">
-            <button class="cart-btn" @click="showCart = true">
-              <i class="fas fa-shopping-cart"></i> ตะกร้า
-              <span v-if="totalItems > 0" class="badge">{{ totalItems }}</span>
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Carousel -->
-  <div id="offerCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active text-center">
-        <img src="image/แผ่นซอฟเจลรองจมูกเท้า.png" class="d-block mx-auto" alt="Personal Care">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>แผ่นซอฟเจลรองจมูกเท้า</h5>
-          <p>ราคา: 219 ฿</p>
-        </div>
-      </div>
-      <div class="carousel-item text-center">
-        <img src="image/แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ.png" class="d-block mx-auto" alt="Grocery">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ</h5>
-          <p>ราคา: 259 ฿</p>
-        </div>
-      </div>
-      <div class="carousel-item text-center">
-        <img src="image/ถุงเท้ารองช้ำ.png" class="d-block mx-auto" alt="Drinks">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>ถุงเท้ารองช้ำ</h5>
-          <p>ราคา: 249 ฿</p>
-        </div>
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
-  </div>
-
-  <!-- Products -->
-  <div class="row mt-4">
-    <div v-if="loading" class="text-center">
-      <div class="spinner-border text-primary"></div>
-      <p>กำลังโหลดสินค้า...</p>
-    </div>
-    <div v-for="(product, id) in products" :key="id" class="col-md-4 mb-4">
-      <div class="card shadow-sm position-relative" :class="{ 'opacity-50': product.stock <= 0 }" @click="openProductModal(id, product)">
-        <img :src="product.image || 'images/default.jpg'" class="card-img-top" @error="handleImgError">
-        <div v-if="product.stock <= 0" class="sold-out">SOLD OUT</div>
-        <div class="card-body text-center">
-          <h5>{{ product.name }}</h5>
-          <p>ราคา: {{ product.price }} ฿</p>
-          <p>คงเหลือ: {{ product.stock }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Product Modal -->
-  <div v-if="selectedProduct" class="modal fade show d-block" style="background: rgba(0,0,0,0.5); z-index:1050;">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ selectedProduct.name }}</h5>
-          <button type="button" class="btn-close" @click="selectedProduct = null"></button>
-        </div>
-        <div class="modal-body text-center">
-          <img :src="selectedProduct.image || 'images/default.jpg'" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
-          <p>ราคา: {{ selectedProduct.price }} ฿</p>
-          <p>คงเหลือ: {{ selectedProduct.stock }} ชิ้น</p>
-          <div class="d-flex justify-content-center align-items-center gap-3 my-3">
-            <button class="btn btn-danger" @click="changeQuantity(-1)">-</button>
-            <span style="font-size: 20px;">{{ quantity }}</span>
-            <button class="btn btn-success" @click="changeQuantity(1)">+</button>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" @click="selectedProduct = null">ปิด</button>
-          <button class="btn btn-primary" @click="confirmAddToCart">เพิ่มไปยังตะกร้า</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cart Modal -->
-  <div v-if="showCart" class="modal fade show d-block" style="background: rgba(0,0,0,0.5)">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">ตะกร้าสินค้า</h5>
-          <button type="button" class="btn-close" @click="showCart = false"></button>
-        </div>
-        <div class="modal-body">
-          <ul class="list-group">
-            <li v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
-              {{ item.name }} x {{ item.quantity }}
-              <span>
-                <span class="badge bg-primary">{{ item.price * item.quantity }} ฿</span>
-                <button class="btn btn-sm btn-danger ms-2" @click.stop="removeFromCart(index)">ลบ</button>
-              </span>
+  <div id="app" class="container mt-4">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="home.html">
+          <i class="fas fa-home"></i> FOOTFIT Production
+        </a>
+        <div>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="scan.html"><i class="fas fa-eye"></i> สแกนเท้า</a>
+            </li>
+            <li class="nav-item">
+              <button class="cart-btn" @click="showCart = true">
+                <i class="fas fa-shopping-cart"></i> ตะกร้า
+                <span v-if="totalItems > 0" class="badge">{{ totalItems }}</span>
+              </button>
             </li>
           </ul>
-          <p class="mt-3 text-end fw-bold">รวม: {{ totalPrice }} ฿</p>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-success" @click="checkout" :disabled="cart.length === 0">ชำระเงิน</button>
-          <button class="btn btn-danger" @click="showCart = false">ปิด</button>
+      </div>
+    </nav>
+
+    <!-- Carousel -->
+<div id="offerCarousel" class="carousel slide mt-4" data-bs-ride="carousel" style="border-radius: 20px; overflow: hidden;">
+
+  <!-- BACKGROUND WRAPPER -->
+  <div class="carousel-inner" style="
+    position: relative;
+    background-color: rgba(0,0,0,0.6);
+  ">
+    <!-- BACKGROUND IMAGE -->
+    <div style="
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('image/ปก.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+      filter: brightness(1.1);
+    "></div>
+
+    <!-- Slide 1 -->
+    <div class="carousel-item active text-center" style="position: relative; z-index: 1; padding: 60px 0;">
+      <img src="image/แผ่นซอฟเจลรองจมูกเท้า.png" class="d-block mx-auto" style="max-height: 250px; object-fit: contain;" alt="Personal Care">
+      <div style="margin-top: 10px; font-size: 1.1rem; color: #fff; font-weight: 500;">
+        แผ่นซอฟเจลรองจมูกเท้า<br><span style="font-size: 1rem;">ราคา: 219 ฿</span>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="carousel-item text-center" style="position: relative; z-index: 1; padding: 60px 0;">
+      <img src="image/แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ.png" class="d-block mx-auto" style="max-height: 250px; object-fit: contain;" alt="Grocery">
+      <div style="margin-top: 10px; font-size: 1.1rem; color: #fff; font-weight: 500;">
+        แผ่นซิลิโคนเจลรองส้นเท้า แก้รองช้ำ<br><span style="font-size: 1rem;">ราคา: 259 ฿</span>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="carousel-item text-center" style="position: relative; z-index: 1; padding: 60px 0;">
+      <img src="image/ถุงเท้ารองช้ำ.png" class="d-block mx-auto" style="max-height: 250px; object-fit: contain;" alt="Drinks">
+      <div style="margin-top: 10px; font-size: 1.1rem; color: #fff; font-weight: 500;">
+        ถุงเท้ารองช้ำ<br><span style="font-size: 1rem;">ราคา: 249 ฿</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+
+    <!-- Product List -->
+    <div class="row mt-4">
+      <div v-if="loading" class="text-center">
+        <div class="spinner-border text-info"></div>
+        <p>กำลังโหลดสินค้า...</p>
+      </div>
+      <div v-for="(product, id) in products" :key="id" class="col-md-4 mb-4">
+        <div class="card shadow-sm position-relative" :class="{ 'opacity-50': product.stock <= 0 }" @click="openProductModal(id, product)">
+          <img :src="product.image || 'images/default.jpg'" class="card-img-top" @error="handleImgError">
+          <div v-if="product.stock <= 0" class="sold-out">SOLD OUT</div>
+          <div class="card-body text-center">
+            <h5>{{ product.name }}</h5>
+            <p>ราคา: {{ product.price }} ฿</p>
+            <p>คงเหลือ: {{ product.stock }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div v-if="selectedProduct" class="modal fade show d-block" style="background: rgba(0,0,0,0.5); z-index:1050;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ selectedProduct.name }}</h5>
+            <button type="button" class="btn-close" @click="selectedProduct = null"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img :src="selectedProduct.image || 'images/default.jpg'" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
+            <p>ราคา: {{ selectedProduct.price }} ฿</p>
+            <p>คงเหลือ: {{ selectedProduct.stock }} ชิ้น</p>
+            <div class="d-flex justify-content-center align-items-center gap-3 my-3">
+              <button class="btn btn-danger" @click="changeQuantity(-1)">-</button>
+              <span style="font-size: 20px;">{{ quantity }}</span>
+              <button class="btn btn-success" @click="changeQuantity(1)">+</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="selectedProduct = null">ปิด</button>
+            <button class="btn btn-primary" @click="confirmAddToCart">เพิ่มไปยังตะกร้า</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div v-if="showCart" class="modal fade show d-block" style="background: rgba(0,0,0,0.5)">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">ตะกร้าสินค้า</h5>
+            <button type="button" class="btn-close" @click="showCart = false"></button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <li v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
+                {{ item.name }} x {{ item.quantity }}
+                <span>
+                  <span class="badge bg-primary">{{ item.price * item.quantity }} ฿</span>
+                  <button class="btn btn-sm btn-danger ms-2" @click.stop="removeFromCart(index)">ลบ</button>
+                </span>
+              </li>
+            </ul>
+            <p class="mt-3 text-end fw-bold">รวม: {{ totalPrice }} ฿</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" @click="checkout" :disabled="cart.length === 0">ชำระเงิน</button>
+            <button class="btn btn-danger" @click="showCart = false">ปิด</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-</div>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          apiBaseUrl: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
+          products: {},
+          cart: [],
+          selectedProduct: null,
+          quantity: 1,
+          showCart: false,
+          loading: true
+        };
+      },
+      computed: {
+        totalPrice() {
+          return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        },
+        totalItems() {
+          return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+      },
+      methods: {
+        async loadProducts() {
+          const res = await fetch(`${this.apiBaseUrl}/products.json`);
+          const all = await res.json();
+          const filtered = {};
+          for (const id in all) {
+            if (all[id].visible) filtered[id] = all[id];
+          }
+          this.products = filtered;
+          this.loading = false;
+        },
+        openProductModal(id, product) {
+          this.selectedProduct = { ...product, id };
+          this.quantity = 1;
+        },
+        changeQuantity(amount) {
+          if (this.quantity + amount > 0 && this.quantity + amount <= this.selectedProduct.stock) {
+            this.quantity += amount;
+          }
+        },
+        async confirmAddToCart() {
+          if (!this.selectedProduct) return;
+          const product = this.products[this.selectedProduct.id];
+          if (!product || product.stock < this.quantity) {
+            alert("❌ สินค้าไม่เพียงพอในสต็อก");
+            this.selectedProduct = null;
+            return;
+          }
+          let existingItem = this.cart.find(item => item.id === this.selectedProduct.id);
+          if (existingItem) {
+            existingItem.quantity += this.quantity;
+          } else {
+            this.cart.push({ id: this.selectedProduct.id, name: this.selectedProduct.name, price: this.selectedProduct.price, quantity: this.quantity });
+          }
+          product.stock -= this.quantity;
+          await fetch(`${this.apiBaseUrl}/products/${this.selectedProduct.id}.json`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ stock: product.stock })
+          });
+          this.selectedProduct = null;
+        },
+        async removeFromCart(index) {
+          const item = this.cart[index];
+          const product = this.products[item.id];
+          product.stock++;
+          await fetch(`${this.apiBaseUrl}/products/${item.id}.json`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ stock: product.stock })
+          });
+          if (item.quantity > 1) item.quantity--;
+          else this.cart.splice(index, 1);
+        },
+        checkout() {
+          if (this.cart.length === 0) return;
+          const amount = this.totalPrice.toFixed(2);
+          const products = this.cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.price * item.quantity
+          }));
+          const footType = localStorage.getItem("footType") || "0";
+          window.location.href = `payment.html?amount=${amount}&products=${encodeURIComponent(JSON.stringify(products))}&footType=${footType}`;
+        },
+        handleImgError(e) {
+          e.target.src = "images/default.jpg";
+        }
+      },
+      mounted() {
+        this.loadProducts();
+      }
+    }).mount("#app");
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-const { createApp } = Vue;
-createApp({
-  data() {
-    return {
-      apiBaseUrl: "https://this-pro-done-default-rtdb.asia-southeast1.firebasedatabase.app",
-      products: {},
-      cart: [],
-      selectedProduct: null,
-      quantity: 1,
-      showCart: false,
-      loading: true
-    };
-  },
-  computed: {
-    totalPrice() {
-      return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    },
-    totalItems() {
-      return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        window.location.href = 'admin-login.html';
+      }
+    });
+
+    // Auto Redirect 10 minutes
+    let inactivityTimer;
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        window.location.href = "home.html";
+      }, 600000);
     }
-  },
-  methods: {
-    async loadProducts() {
-      const res = await fetch(`${this.apiBaseUrl}/products.json`);
-      const all = await res.json();
-      const filtered = {};
-      for (const id in all) {
-        if (all[id].visible) filtered[id] = all[id];
-      }
-      this.products = filtered;
-      this.loading = false;
-    },
-    openProductModal(id, product) {
-      this.selectedProduct = { ...product, id };
-      this.quantity = 1;
-    },
-    changeQuantity(amount) {
-      if (this.quantity + amount > 0 && this.quantity + amount <= this.selectedProduct.stock) {
-        this.quantity += amount;
-      }
-    },
-    async confirmAddToCart() {
-      if (!this.selectedProduct) return;
-      const product = this.products[this.selectedProduct.id];
-      if (!product || product.stock < this.quantity) {
-        alert("❌ สินค้าไม่เพียงพอในสต็อก");
-        this.selectedProduct = null;
-        return;
-      }
-      let existingItem = this.cart.find(item => item.id === this.selectedProduct.id);
-      if (existingItem) {
-        existingItem.quantity += this.quantity;
-      } else {
-        this.cart.push({ id: this.selectedProduct.id, name: this.selectedProduct.name, price: this.selectedProduct.price, quantity: this.quantity });
-      }
-      product.stock -= this.quantity;
-      await fetch(`${this.apiBaseUrl}/products/${this.selectedProduct.id}.json`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stock: product.stock })
-      });
-      this.selectedProduct = null;
-    },
-    async removeFromCart(index) {
-      const item = this.cart[index];
-      const product = this.products[item.id];
-      product.stock++;
-      await fetch(`${this.apiBaseUrl}/products/${item.id}.json`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stock: product.stock })
-      });
-      if (item.quantity > 1) item.quantity--;
-      else this.cart.splice(index, 1);
-    },
-    checkout() {
-      if (this.cart.length === 0) return;
-      const amount = this.totalPrice.toFixed(2);
-      const products = this.cart.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.price * item.quantity
-      }));
-      const footType = localStorage.getItem("footType") || "0";
-      window.location.href = `payment.html?amount=${amount}&products=${encodeURIComponent(JSON.stringify(products))}&footType=${footType}`;
-    },
-    handleImgError(e) {
-      e.target.src = "images/default.jpg";
-    }
-  },
-  mounted() {
-    this.loadProducts();
-  }
-}).mount("#app");
 
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    window.location.href = 'admin-login.html';
-  }
-});
-</script>
+    ['mousemove', 'keydown', 'click', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetInactivityTimer);
+    });
 
-<script>
-// ระบบ Inactivity Auto Redirect 10นาที
-let inactivityTimer;
-
-function resetInactivityTimer() {
-  clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => {
-    window.location.href = "home.html";
-  }, 600000); // 10นาที
-}
-
-['mousemove', 'keydown', 'click', 'touchstart'].forEach(evt => {
-  document.addEventListener(evt, resetInactivityTimer);
-});
-
-resetInactivityTimer();  // เริ่มจับเวลาทันทีตอนโหลดหน้า
-document.addEventListener("mousemove", resetInactivityTimer);
-document.addEventListener("keydown", resetInactivityTimer);
-document.addEventListener("click", resetInactivityTimer);
-resetInactivityTimer(); // เริ่มจับเวลาเมื่อหน้าโหลด
-
-</script>
-
+    resetInactivityTimer();
+  </script>
 </body>
 </html>

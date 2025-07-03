@@ -4,57 +4,80 @@
   <meta charset="UTF-8" />
   <title>หน้าต้อนรับ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Sarabun&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kiosk-style.css" />
   <style>
-    body {
+    html, body {
       margin: 0;
-      background-image: url('image/BG.png');
-      background-size: cover;
-      background-position: center;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Sarabun', sans-serif;
+      overflow: hidden;
+      cursor: pointer;
+      color: #ffffff;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a001f 0%, #1b0044 30%, #2a0066 50%, #3f0088 70%, #5e00b3 100%);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
-      overflow: hidden;
-      cursor: pointer; /* เปลี่ยนให้รู้ว่าคลิกได้ทั้งหน้า */
     }
+
     .overlay {
-      padding: 3rem 4rem;
-      border-radius: 20px;
-      color: #000;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 4rem;
       text-align: center;
-      max-width: 400px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 700px;
+      width: 95%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      z-index: 2;
     }
+
+    .logo {
+      width: 400px;
+      max-width: 80%;
+      height: auto;
+      margin-bottom: 2.5rem;
+      filter: drop-shadow(0 0 15px #ff66cc);
+    }
+
     h1 {
-      font-size: 3rem;
-      color: #00e4b2;
-      margin-bottom: 1rem;
-      text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+      font-size: 4rem;
+      color: #e0aaff;
+      text-shadow: 0 0 15px #ff66cc;
+      margin-bottom: 0.5rem;
     }
+
     h2 {
       font-size: 2rem;
-      color: #333;
-      margin-bottom: 1rem;
-    }
-    h3 {
-      font-size: 1rem;
-      color: #000;
-      margin-bottom: 1rem;
-    }
-    p {
-      font-size: 1.2rem;
-      color: #000;
+      color: #80d0ff;
       margin-bottom: 2rem;
     }
-    .logo {
-      margin-top: 1.5rem;
-      width: 300px;
-      height: auto;
-      object-fit: contain;
+
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: #e0e0ff;
       margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .slogan {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #ccccff;
+    }
+
+    @media (max-height: 700px) {
+      h1 { font-size: 3rem; }
+      h2 { font-size: 1.6rem; }
+      h3 { font-size: 1rem; }
+      .logo { width: 220px; }
+      .slogan { font-size: 1rem; }
     }
   </style>
 </head>
@@ -62,11 +85,12 @@
 <body onclick="location.href='menu.html'">
 
   <div class="overlay">
+    <img src="image/black 2.png" alt="FOOTFIT Logo" class="logo">
     <h1>WELCOME</h1>
     <h2>FOOTFIT VENDING MACHINE</h2>
-    <img src="image/logo.png" alt="FOOTFIT Logo" class="logo">
     <h3>"เพราะสุขภาพดี เริ่มจากตัวเรา"</h3>
     <h3>ก้าวให้ไกลเพื่อสุขภาพและชีวิตของลูกหลาน</h3>
+    <div class="slogan">แตะเพื่อเริ่มต้น</div>
   </div>
 
 </body>

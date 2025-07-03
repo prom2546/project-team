@@ -3,141 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>เมนูหลัก - AI Foot Scanner</title>
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <title>เมนูหลัก - FOOTFIT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Sarabun&display=swap" rel="stylesheet">
   <style>
-    body {
+    html, body {
       margin: 0;
-      background-image: url('image/BG.png');
-      background-size: cover;
-      background-position: center;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Sarabun', sans-serif;
+      overflow: hidden;
+      color: white;
+      cursor: pointer;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a001f 0%, #1b0044 30%, #2a0066 50%, #3f0088 70%, #5e00b3 100%);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
-      overflow: hidden;
-      animation: backgroundAnimation 10s ease-in-out infinite;
-      flex-direction: column;
       text-align: center;
     }
 
-    @keyframes backgroundAnimation {
-      0% { background-position: center; }
-      50% { background-position: right; }
-      100% { background-position: center; }
-    }
-
     .hero {
-      padding: 50px 20px;
-      margin-bottom: 30px;
-      animation: fadeIn 1s ease-in-out;
-      background-size: 50%;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      margin-bottom: 40px;
     }
 
     .hero h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
+      font-size: 4rem;
       font-weight: bold;
-      text-transform: uppercase;
+      color: #e0aaff;
+      text-shadow: 0 0 15px #ff66cc;
     }
 
     .hero p {
-      font-size: 1.3em;
-      margin-bottom: 30px;
-    }
-
-    .btn-custom, .btn-secondary-custom {
-      font-size: 1.3em;
-      padding: 15px 40px;
-      border-radius: 40px;
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
-      max-width: 300px;
-      width: 110%;
-      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-custom {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .btn-custom:hover {
-      background-color: #218838;
-      transform: translateY(-5px);
-    }
-
-    .btn-secondary-custom {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .btn-secondary-custom:hover {
-      background-color: #0056b3;
-      transform: translateY(-5px);
+      font-size: 1.8rem;
+      color: #ccccff;
+      margin-top: 1rem;
     }
 
     .row {
       display: flex;
       justify-content: center;
-      gap: 30px;
+      gap: 50px;
       flex-wrap: wrap;
+      margin-top: 40px;
     }
 
-    .col {
-      flex: 1 1 45%;
-      max-width: 300px;
+    .btn-custom, .btn-secondary-custom {
+      font-size: 2.2rem;
+      padding: 30px 60px;
+      border-radius: 60px;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #ff66cc, #9966ff);
+      color: white;
+      min-width: 400px;
     }
 
-    .btn-custom:active, .btn-secondary-custom:active {
-      transform: translateY(2px);
-      box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+    .btn-secondary-custom {
+      background: linear-gradient(135deg, #66ccff, #6699ff);
     }
 
-    h1, p {
-      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-      animation: slideUp 2s ease-out;
+    .btn-custom:hover, .btn-secondary-custom:hover {
+      transform: translateY(-5px);
+      filter: brightness(1.2);
     }
 
-    @keyframes slideUp {
-      0% { transform: translateY(20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+      }
+
+      .btn-custom, .btn-secondary-custom {
+        font-size: 1.2rem;
+        min-width: 90vw;
+        padding: 20px;
+      }
+
+      .row {
+        flex-direction: column;
+        gap: 20px;
+      }
     }
   </style>
 </head>
 <body>
+
   <div class="hero">
-    <h1>FOOTFIT Production</h1>
+    <h1>FOOTFIT MENU</h1>
+    <p>กรุณาเลือกเมนูที่คุณต้องการ</p>
   </div>
 
-  <p>กรุณาเลือกเมนูที่คุณต้องการ</p>
-
   <div class="row">
-    <div class="col">
-      <button class="btn-custom" onclick="location.href='scan.html'">🦶 สแกนสุขภาพเท้า</button>
-    </div>
-    <div class="col">
-      <button class="btn-secondary-custom" onclick="location.href='index_backup.html'">🛍️ เลือกซื้อสินค้า</button>
-    </div>
+    <button class="btn-custom" onclick="location.href='scan.html'">สแกนสุขภาพเท้า</button>
+    <button class="btn-secondary-custom" onclick="location.href='index_backup.html'">เลือกซื้อสินค้า</button>
   </div>
 
   <script>
     let lastTouchTime = Date.now();
     const touchTimeout = 2000;
 
-    document.body.addEventListener('touchstart', function () {
-      lastTouchTime = Date.now();
-    });
+    document.body.addEventListener('touchstart', () => lastTouchTime = Date.now());
 
-    setInterval(function () {
+    setInterval(() => {
       if (Date.now() - lastTouchTime > touchTimeout) {
         window.location.href = 'home.html';
       }
